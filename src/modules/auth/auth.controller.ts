@@ -13,7 +13,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Registrar nuevo ciudadano' })
+  @ApiOperation({ summary: 'Registrar nuevo paciente' })
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }

@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { Usuario } from '../usuarios/entities/usuario.entity';
+import { ObrasSocialesService } from '../obras-sociales/obras-sociales.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -16,6 +17,7 @@ export class AuthService {
   constructor(
     @InjectRepository(Usuario)
     private readonly usuariosRepo: Repository<Usuario>,
+    private readonly obrasSocialesService: ObrasSocialesService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -25,6 +27,10 @@ export class AuthService {
 
     const dniExiste = await this.usuariosRepo.findOne({ where: { dni: dto.dni } });
     if (dniExiste) throw new ConflictException('El DNI ya está registrado');
+
+    if (dto.obraSocialId) {
+      await this.obrasSocialesService.findOne(dto.obraSocialId);
+    }
 
     const hash = await bcrypt.hash(dto.password, 10);
     const usuario = this.usuariosRepo.create({ ...dto, password: hash });
@@ -46,7 +52,10 @@ export class AuthService {
   }
 
   async perfil(usuarioId: string) {
-    return this.usuariosRepo.findOneOrFail({ where: { id: usuarioId } });
+    return this.usuariosRepo.findOneOrFail({
+      where: { id: usuarioId },
+      relations: ['obraSocial'],
+    });
   }
 
   private generarToken(usuario: Usuario) {

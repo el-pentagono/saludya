@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsOptional,
   IsString,
+  IsUUID,
   Length,
   Matches,
   MinLength,
@@ -40,4 +41,9 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   telefono?: string;
+
+  @ApiProperty({ required: false, description: 'ID de la obra social del paciente' })
+  @IsOptional()
+  @IsUUID()
+  obraSocialId?: string;
 }

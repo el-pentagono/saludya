@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsOptional, IsString, Length } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import { Rol } from '../../../common/enums/rol.enum';
 
 export class CreateUsuarioDto {
@@ -36,4 +36,9 @@ export class CreateUsuarioDto {
   @IsOptional()
   @IsEnum(Rol)
   rol?: Rol;
+
+  @ApiProperty({ required: false, description: 'ID de la obra social asignada' })
+  @IsOptional()
+  @IsUUID()
+  obraSocialId?: string;
 }

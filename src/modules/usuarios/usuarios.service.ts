@@ -22,7 +22,10 @@ export class UsuariosService {
   }
 
   async findOne(id: string) {
-    const usuario = await this.repo.findOne({ where: { id } });
+    const usuario = await this.repo.findOne({
+      where: { id },
+      relations: ['obraSocial'],
+    });
     if (!usuario) throw new NotFoundException(`Usuario ${id} no encontrado`);
     return usuario;
   }

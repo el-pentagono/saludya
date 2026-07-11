@@ -1,5 +1,8 @@
 export enum Rol {
-  CIUDADANO = 'ciudadano',
-  MODERADOR = 'moderador',
-  ADMIN = 'admin',
+  PACIENTE = 'paciente',
+  MEDICO = 'medico',
+  ENFERMERO = 'enfermero',
+  FARMACEUTICO = 'farmaceutico',
+  DIRECTOR = 'director',
+  AUDITOR = 'auditor',
 }

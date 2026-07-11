@@ -27,7 +27,7 @@ export class UsuariosController {
   constructor(private readonly service: UsuariosService) {}
 
   @Get()
-  @Roles(Rol.ADMIN, Rol.MODERADOR)
+  @Roles(Rol.DIRECTOR, Rol.AUDITOR)
   @ApiOperation({ summary: 'Listar todos los usuarios' })
   findAll() {
     return this.service.findAll();
@@ -40,15 +40,15 @@ export class UsuariosController {
   }
 
   @Get(':id')
-  @Roles(Rol.ADMIN, Rol.MODERADOR)
+  @Roles(Rol.DIRECTOR, Rol.AUDITOR)
   @ApiOperation({ summary: 'Ver usuario por ID' })
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }
 
   @Post()
-  @Roles(Rol.ADMIN)
-  @ApiOperation({ summary: 'Crear usuario (solo admin)' })
+  @Roles(Rol.DIRECTOR)
+  @ApiOperation({ summary: 'Crear usuario (solo director)' })
   create(@Body() dto: CreateUsuarioDto) {
     return this.service.create(dto);
   }
@@ -60,12 +60,12 @@ export class UsuariosController {
     @Body() dto: UpdateUsuarioDto,
     @UsuarioActual() usuarioActual: Usuario,
   ) {
-    const targetId = usuarioActual.rol === Rol.ADMIN ? id : usuarioActual.id;
+    const targetId = usuarioActual.rol === Rol.DIRECTOR ? id : usuarioActual.id;
     return this.service.update(targetId, dto);
   }
 
   @Delete(':id')
-  @Roles(Rol.ADMIN)
+  @Roles(Rol.DIRECTOR)
   @ApiOperation({ summary: 'Desactivar usuario' })
   desactivar(@Param('id') id: string) {
     return this.service.desactivar(id);

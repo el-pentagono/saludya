@@ -1,5 +1,5 @@
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -10,7 +10,10 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalInterceptors(
+    new LoggingInterceptor(),
+    new ClassSerializerInterceptor(app.get(Reflector)),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('SaludYa API')
@@ -19,6 +22,7 @@ async function bootstrap() {
     .addBearerAuth()
     .addTag('auth', 'Autenticacion y registro')
     .addTag('usuarios', 'Pacientes y profesionales de la salud')
+    .addTag('obras-sociales', 'Obras sociales disponibles')
     .addTag('appointments', 'Gestion de turnos y agenda medica')
     .addTag('medical-records', 'Historia clinica digital')
     .addTag('teleconsult', 'Videoconsulta y sala virtual')
