@@ -93,4 +93,9 @@ export class AppointmentsService {
     turno.estado = EstadoTurno.CANCELADO;
     return this.repo.save(turno);
   }
+
+  async existeVinculo(medicoId: string, pacienteId: string): Promise<boolean> {
+    const cantidad = await this.repo.count({ where: { medicoId, pacienteId } });
+    return cantidad > 0;
+  }
 }

@@ -19,7 +19,13 @@ const fechaFutura = () => new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString
 
 describe('AppointmentsService', () => {
   let service: AppointmentsService;
-  let repo: { create: jest.Mock; save: jest.Mock; findOne: jest.Mock; createQueryBuilder: jest.Mock };
+  let repo: {
+    create: jest.Mock;
+    save: jest.Mock;
+    findOne: jest.Mock;
+    createQueryBuilder: jest.Mock;
+    count: jest.Mock;
+  };
   let usuariosService: { findOne: jest.Mock };
   let queryBuilder: {
     leftJoinAndSelect: jest.Mock;
@@ -41,6 +47,7 @@ describe('AppointmentsService', () => {
       save: jest.fn((data) => Promise.resolve({ id: 'turno-1', ...data })),
       findOne: jest.fn(),
       createQueryBuilder: jest.fn(() => queryBuilder),
+      count: jest.fn(),
     };
 
     usuariosService = { findOne: jest.fn() };
@@ -222,6 +229,23 @@ describe('AppointmentsService', () => {
       await expect(service.cancelar('inexistente', paciente)).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  describe('existeVinculo', () => {
+    it('devuelve true si el médico tiene al menos un turno con el paciente', async () => {
+      repo.count.mockResolvedValue(1);
+
+      await expect(service.existeVinculo(medico.id, paciente.id)).resolves.toBe(true);
+      expect(repo.count).toHaveBeenCalledWith({
+        where: { medicoId: medico.id, pacienteId: paciente.id },
+      });
+    });
+
+    it('devuelve false si no hay turnos entre el médico y el paciente', async () => {
+      repo.count.mockResolvedValue(0);
+
+      await expect(service.existeVinculo(medico.id, paciente.id)).resolves.toBe(false);
     });
   });
 });
