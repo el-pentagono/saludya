@@ -32,6 +32,13 @@ export class MedicalRecordsService {
     return this.repo.save(entrada);
   }
 
+  async listarTodas() {
+    return this.repo.find({
+      relations: ['paciente', 'medico'],
+      order: { fecha: 'DESC' },
+    });
+  }
+
   async historialDePaciente(pacienteId: string, usuario: Usuario) {
     await this.verificarAccesoAPaciente(pacienteId, usuario);
     return this.repo.find({

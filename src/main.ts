@@ -28,6 +28,7 @@ async function bootstrap() {
     .addTag('teleconsult', 'Videoconsulta y sala virtual')
     .addTag('treatments', 'Seguimiento de tratamientos y prescripciones')
     .addTag('documents', 'Certificados y constancias via TramitExpress')
+    .addTag('admin', 'Vistas de solo lectura para Director y Auditor')
     .build();
   SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config));
 

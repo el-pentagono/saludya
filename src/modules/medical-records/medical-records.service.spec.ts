@@ -72,6 +72,18 @@ describe('MedicalRecordsService', () => {
     });
   });
 
+  describe('listarTodas', () => {
+    it('devuelve todas las entradas sin filtrar', async () => {
+      repo.find.mockResolvedValue([]);
+
+      await service.listarTodas();
+
+      expect(repo.find).toHaveBeenCalledWith(
+        expect.objectContaining({ relations: ['paciente', 'medico'] }),
+      );
+    });
+  });
+
   describe('historialDePaciente', () => {
     it('permite al paciente ver su propia historia', async () => {
       repo.find.mockResolvedValue([]);

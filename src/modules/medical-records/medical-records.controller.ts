@@ -23,6 +23,13 @@ export class MedicalRecordsController {
     return this.service.crear(medico, dto);
   }
 
+  @Get()
+  @Roles(Rol.DIRECTOR, Rol.AUDITOR)
+  @ApiOperation({ summary: 'Listar todas las entradas de historia clínica del sistema' })
+  listarTodas() {
+    return this.service.listarTodas();
+  }
+
   @Get('paciente/:pacienteId')
   @ApiOperation({ summary: 'Ver la historia clínica completa de un paciente' })
   historialDePaciente(

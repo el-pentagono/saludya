@@ -18,6 +18,7 @@ import { MedicalRecordsModule } from './modules/medical-records/medical-records.
 import { TeleconsultModule } from './modules/teleconsult/teleconsult.module';
 import { TreatmentsModule } from './modules/treatments/treatments.module';
 import { DocumentsModule } from './modules/documents/documents.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -37,7 +38,7 @@ import { DocumentsModule } from './modules/documents/documents.module';
         autoLoadEntities: true,
       }),
     }),
-    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule,
+    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule,
   ],
 })
 export class AppModule {}
