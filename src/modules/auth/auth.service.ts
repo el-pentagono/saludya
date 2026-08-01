@@ -28,12 +28,17 @@ export class AuthService {
     const dniExiste = await this.usuariosRepo.findOne({ where: { dni: dto.dni } });
     if (dniExiste) throw new ConflictException('El DNI ya está registrado');
 
+    let afiliacionVerificada = false;
     if (dto.obraSocialId) {
-      await this.obrasSocialesService.findOne(dto.obraSocialId);
+      const resultado = await this.obrasSocialesService.validarAfiliado(dto.obraSocialId, {
+        numeroAfiliado: dto.numeroAfiliado,
+        dni: dto.dni,
+      });
+      afiliacionVerificada = resultado.afiliado && resultado.vigente;
     }
 
     const hash = await bcrypt.hash(dto.password, 10);
-    const usuario = this.usuariosRepo.create({ ...dto, password: hash });
+    const usuario = this.usuariosRepo.create({ ...dto, password: hash, afiliacionVerificada });
     await this.usuariosRepo.save(usuario);
 
     return this.generarToken(usuario);

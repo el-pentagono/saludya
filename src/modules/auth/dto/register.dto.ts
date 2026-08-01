@@ -7,6 +7,7 @@ import {
   Length,
   Matches,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 
 export class RegisterDto {
@@ -46,4 +47,13 @@ export class RegisterDto {
   @IsOptional()
   @IsUUID()
   obraSocialId?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Número de afiliado en la obra social indicada (requerido si se envía obraSocialId)',
+  })
+  @ValidateIf((dto) => !!dto.obraSocialId)
+  @IsString()
+  @Length(1, 30)
+  numeroAfiliado?: string;
 }

@@ -27,6 +27,8 @@ export class Usuario {
   @ManyToOne(() => ObraSocial, { nullable: true, eager: false })
   @JoinColumn({ name: 'obraSocialId' })
   obraSocial?: ObraSocial;
+  @Column({ nullable: true }) numeroAfiliado?: string;
+  @Column({ default: false }) afiliacionVerificada: boolean;
   @CreateDateColumn() fechaRegistro: Date;
   @UpdateDateColumn() fechaActualizacion: Date;
 }
