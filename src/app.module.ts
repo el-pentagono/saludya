@@ -10,6 +10,7 @@ import { Appointment } from './modules/appointments/entities/appointment.entity'
 import { MedicalRecord } from './modules/medical-records/entities/medical-record.entity';
 import { Treatment } from './modules/treatments/entities/treatment.entity';
 import { TreatmentFollowUp } from './modules/treatments/entities/treatment-follow-up.entity';
+import { Document } from './modules/documents/entities/document.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsuariosModule } from './modules/usuarios/usuarios.module';
 import { ObrasSocialesModule } from './modules/obras-sociales/obras-sociales.module';
@@ -32,7 +33,7 @@ import { AdminModule } from './modules/admin/admin.module';
         username: config.get('database.username'),
         password: config.get('database.password'),
         database: config.get('database.database'),
-        entities: [Usuario, ObraSocial, Appointment, MedicalRecord, Treatment, TreatmentFollowUp],
+        entities: [Usuario, ObraSocial, Appointment, MedicalRecord, Treatment, TreatmentFollowUp, Document],
         synchronize: config.get<boolean>('database.synchronize'),
         logging: config.get<boolean>('database.logging'),
         autoLoadEntities: true,
