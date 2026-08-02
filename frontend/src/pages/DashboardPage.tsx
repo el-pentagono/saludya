@@ -185,10 +185,12 @@ export function DashboardPage() {
             <ul>
               {proximos.map((t) => (
                 <li key={t.id}>
-                  {new Date(t.fecha).toLocaleString('es-AR')}
-                  {rol === 'medico'
-                    ? t.paciente && ` — ${t.paciente.nombre} ${t.paciente.apellido}`
-                    : t.medico && ` — Dr/a. ${t.medico.nombre} ${t.medico.apellido}`}
+                  <Link to={rol === 'medico' ? '/medico/agenda' : '/turnos'}>
+                    {new Date(t.fecha).toLocaleString('es-AR')}
+                    {rol === 'medico'
+                      ? t.paciente && ` — ${t.paciente.nombre} ${t.paciente.apellido}`
+                      : t.medico && ` — Dr/a. ${t.medico.nombre} ${t.medico.apellido}`}
+                  </Link>
                 </li>
               ))}
             </ul>
