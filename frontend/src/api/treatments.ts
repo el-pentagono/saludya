@@ -23,3 +23,6 @@ export const agregarSeguimiento = (treatmentId: string, nota: string) =>
   apiClient
     .post<TreatmentFollowUp>(`/api/treatments/${treatmentId}/seguimientos`, { nota })
     .then((r) => r.data);
+
+export const dispensarTratamiento = (id: string) =>
+  apiClient.patch<Treatment>(`/api/treatments/${id}/dispensar`).then((r) => r.data);

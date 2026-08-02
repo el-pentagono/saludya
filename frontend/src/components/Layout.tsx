@@ -18,6 +18,9 @@ function NavLinksPorRol({ rol }: { rol: string | undefined }) {
       </>
     );
   }
+  if (rol === 'farmaceutico') {
+    return <NavLink to="/farmaceutico/dispensacion">Dispensación</NavLink>;
+  }
   return (
     <>
       <NavLink to="/turnos">Mis turnos</NavLink>

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listarTurnos } from '../api/appointments';
+import { listarTratamientos } from '../api/treatments';
 import { listarTriaje } from '../api/triage';
 import { useAuth } from '../context/AuthContext';
-import type { Appointment, TriajeCaso } from '../types';
+import type { Appointment, Treatment, TriajeCaso } from '../types';
 
 function CardsPorRol({ rol }: { rol: string | undefined }) {
   if (rol === 'medico') {
@@ -30,6 +31,13 @@ function CardsPorRol({ rol }: { rol: string | undefined }) {
       </>
     );
   }
+  if (rol === 'farmaceutico') {
+    return (
+      <Link className="card" to="/farmaceutico/dispensacion">
+        Dispensación
+      </Link>
+    );
+  }
   return (
     <>
       <Link className="card" to="/turnos">
@@ -47,22 +55,26 @@ function CardsPorRol({ rol }: { rol: string | undefined }) {
 
 export function DashboardPage() {
   const { usuario } = useAuth();
-  const esMedico = usuario?.rol === 'medico';
-  const esEnfermero = usuario?.rol === 'enfermero';
+  const rol = usuario?.rol;
   const [turnos, setTurnos] = useState<Appointment[]>([]);
   const [casosTriaje, setCasosTriaje] = useState<TriajeCaso[]>([]);
+  const [tratamientos, setTratamientos] = useState<Treatment[]>([]);
 
   useEffect(() => {
-    if (esEnfermero) {
+    if (rol === 'enfermero') {
       listarTriaje()
         .then(setCasosTriaje)
         .catch(() => setCasosTriaje([]));
+    } else if (rol === 'farmaceutico') {
+      listarTratamientos()
+        .then(setTratamientos)
+        .catch(() => setTratamientos([]));
     } else {
       listarTurnos()
         .then(setTurnos)
         .catch(() => setTurnos([]));
     }
-  }, [esEnfermero]);
+  }, [rol]);
 
   const proximos = turnos
     .filter((t) => t.estado === 'pendiente')
@@ -70,19 +82,20 @@ export function DashboardPage() {
     .slice(0, 3);
 
   const casosEnEspera = casosTriaje.filter((c) => c.estado === 'en_espera');
+  const tratamientosPendientes = tratamientos.filter((t) => t.estado === 'prescrito');
 
   return (
     <div>
       <h1>Hola, {usuario?.nombre}</h1>
 
       <div className="cards">
-        <CardsPorRol rol={usuario?.rol} />
+        <CardsPorRol rol={rol} />
         <Link className="card" to="/perfil">
           Mi perfil
         </Link>
       </div>
 
-      {esEnfermero ? (
+      {rol === 'enfermero' && (
         <>
           <h2>Casos de triaje en espera</h2>
           {casosEnEspera.length === 0 ? (
@@ -98,9 +111,29 @@ export function DashboardPage() {
             </ul>
           )}
         </>
-      ) : (
+      )}
+
+      {rol === 'farmaceutico' && (
         <>
-          <h2>{esMedico ? 'Próximos turnos de tu agenda' : 'Próximos turnos'}</h2>
+          <h2>Tratamientos pendientes de dispensar</h2>
+          {tratamientosPendientes.length === 0 ? (
+            <p>No hay tratamientos pendientes.</p>
+          ) : (
+            <ul>
+              {tratamientosPendientes.map((t) => (
+                <li key={t.id}>
+                  {t.paciente ? `${t.paciente.nombre} ${t.paciente.apellido}` : '—'} —{' '}
+                  {t.medicamento} ({t.dosis})
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
+
+      {rol !== 'enfermero' && rol !== 'farmaceutico' && (
+        <>
+          <h2>{rol === 'medico' ? 'Próximos turnos de tu agenda' : 'Próximos turnos'}</h2>
           {proximos.length === 0 ? (
             <p>No tenés turnos pendientes.</p>
           ) : (
@@ -108,7 +141,7 @@ export function DashboardPage() {
               {proximos.map((t) => (
                 <li key={t.id}>
                   {new Date(t.fecha).toLocaleString('es-AR')}
-                  {esMedico
+                  {rol === 'medico'
                     ? t.paciente && ` — ${t.paciente.nombre} ${t.paciente.apellido}`
                     : t.medico && ` — Dr/a. ${t.medico.nombre} ${t.medico.apellido}`}
                 </li>

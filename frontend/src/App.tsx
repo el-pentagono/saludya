@@ -9,6 +9,7 @@ import { DocumentsPage } from './pages/DocumentsPage';
 import { TreatmentFollowUpDetailPage } from './pages/enfermero/TreatmentFollowUpDetailPage';
 import { TreatmentFollowUpsPage } from './pages/enfermero/TreatmentFollowUpsPage';
 import { TriagePage } from './pages/enfermero/TriagePage';
+import { DispensingPage } from './pages/farmaceutico/DispensingPage';
 import { LoginPage } from './pages/LoginPage';
 import { MedicalRecordsPage } from './pages/MedicalRecordsPage';
 import { AgendaPage } from './pages/medico/AgendaPage';
@@ -56,6 +57,10 @@ export default function App() {
                   path="/enfermero/tratamientos/:treatmentId"
                   element={<TreatmentFollowUpDetailPage />}
                 />
+              </Route>
+
+              <Route element={<RequireRole roles={['farmaceutico']} />}>
+                <Route path="/farmaceutico/dispensacion" element={<DispensingPage />} />
               </Route>
             </Route>
           </Route>
