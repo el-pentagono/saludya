@@ -8,6 +8,7 @@ function NavLinksPorRol({ rol }: { rol: string | undefined }) {
         <NavLink to="/medico/agenda">Mi agenda</NavLink>
         <NavLink to="/medico/triaje">Triaje crítico</NavLink>
         <NavLink to="/medico/tratamientos">Tratamientos</NavLink>
+        <NavLink to="/medico/boveda-salud-mental">Bóveda salud mental</NavLink>
       </>
     );
   }
@@ -35,6 +36,7 @@ function NavLinksPorRol({ rol }: { rol: string | undefined }) {
       <NavLink to="/turnos">Mis turnos</NavLink>
       <NavLink to="/historia-clinica">Historia clínica</NavLink>
       <NavLink to="/documentos">Documentos</NavLink>
+      <NavLink to="/boveda-salud-mental">Bóveda salud mental</NavLink>
     </>
   );
 }

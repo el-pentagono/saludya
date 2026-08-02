@@ -131,3 +131,29 @@ export interface AdminResumen {
   tratamientosPorEstado: Record<string, number>;
   totalHistoriasClinicas: number;
 }
+
+export interface RegistroSaludMental {
+  id: string;
+  pacienteId: string;
+  paciente?: PersonaResumen;
+  medicoId: string;
+  medico?: PersonaResumen;
+  /** Ausente en la respuesta si el que consulta es el paciente (el backend la oculta) */
+  notasPrivadas?: string;
+  resumenPaciente: string;
+  fecha: string;
+}
+
+export interface TranscripcionConsulta {
+  id: string;
+  appointmentId: string;
+  medicoId: string;
+  pacienteId: string;
+  paciente?: PersonaResumen;
+  transcripcionCruda: string;
+  resumen: string;
+  puntosClave: string[];
+  medicalRecordId?: string;
+  fechaCreacion: string;
+  fechaConfirmacion?: string;
+}

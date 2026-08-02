@@ -75,6 +75,10 @@ export function AgendaPage() {
                         Historia clínica
                       </Link>
                       <Link to={`/medico/pacientes/${t.pacienteId}/prescribir`}>Prescribir</Link>
+                      <Link to={`/medico/pacientes/${t.pacienteId}/boveda-salud-mental`}>
+                        Bóveda salud mental
+                      </Link>
+                      <Link to={`/medico/turnos/${t.id}/transcripcion`}>Transcripción IA</Link>
                     </>
                   )}
                 </td>

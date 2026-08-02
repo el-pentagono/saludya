@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ResumenPage } from './pages/admin/ResumenPage';
 import { UsersPage } from './pages/admin/UsersPage';
 import { AppointmentsPage } from './pages/AppointmentsPage';
+import { BovedaSaludMentalPage } from './pages/BovedaSaludMentalPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { DocumentsPage } from './pages/DocumentsPage';
 import { TreatmentFollowUpDetailPage } from './pages/enfermero/TreatmentFollowUpDetailPage';
@@ -15,6 +16,9 @@ import { DispensingPage } from './pages/farmaceutico/DispensingPage';
 import { LoginPage } from './pages/LoginPage';
 import { MedicalRecordsPage } from './pages/MedicalRecordsPage';
 import { AgendaPage } from './pages/medico/AgendaPage';
+import { AmbientAiPage } from './pages/medico/AmbientAiPage';
+import { BovedaCreatePage } from './pages/medico/BovedaCreatePage';
+import { BovedaListPage } from './pages/medico/BovedaListPage';
 import { MedicoTriagePage } from './pages/medico/MedicoTriagePage';
 import { PatientRecordPage } from './pages/medico/PatientRecordPage';
 import { PrescribePage } from './pages/medico/PrescribePage';
@@ -38,12 +42,14 @@ export default function App() {
                 <Route path="/turnos" element={<AppointmentsPage />} />
                 <Route path="/historia-clinica" element={<MedicalRecordsPage />} />
                 <Route path="/documentos" element={<DocumentsPage />} />
+                <Route path="/boveda-salud-mental" element={<BovedaSaludMentalPage />} />
               </Route>
 
               <Route element={<RequireRole roles={['medico']} />}>
                 <Route path="/medico/agenda" element={<AgendaPage />} />
                 <Route path="/medico/triaje" element={<MedicoTriagePage />} />
                 <Route path="/medico/tratamientos" element={<TreatmentsPage />} />
+                <Route path="/medico/boveda-salud-mental" element={<BovedaListPage />} />
                 <Route
                   path="/medico/pacientes/:pacienteId/historia-clinica"
                   element={<PatientRecordPage />}
@@ -51,6 +57,14 @@ export default function App() {
                 <Route
                   path="/medico/pacientes/:pacienteId/prescribir"
                   element={<PrescribePage />}
+                />
+                <Route
+                  path="/medico/pacientes/:pacienteId/boveda-salud-mental"
+                  element={<BovedaCreatePage />}
+                />
+                <Route
+                  path="/medico/turnos/:appointmentId/transcripcion"
+                  element={<AmbientAiPage />}
                 />
               </Route>
 
