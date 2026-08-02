@@ -124,3 +124,10 @@ export interface TriajeCaso {
   fechaCreacion: string;
   fechaAsignacion?: string;
 }
+
+export interface AdminResumen {
+  usuariosPorRol: Record<string, number>;
+  turnosPorEstado: Record<string, number>;
+  tratamientosPorEstado: Record<string, number>;
+  totalHistoriasClinicas: number;
+}

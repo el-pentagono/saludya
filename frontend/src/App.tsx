@@ -3,6 +3,8 @@ import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { RequireRole } from './components/RequireRole';
 import { AuthProvider } from './context/AuthContext';
+import { ResumenPage } from './pages/admin/ResumenPage';
+import { UsersPage } from './pages/admin/UsersPage';
 import { AppointmentsPage } from './pages/AppointmentsPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { DocumentsPage } from './pages/DocumentsPage';
@@ -61,6 +63,11 @@ export default function App() {
 
               <Route element={<RequireRole roles={['farmaceutico']} />}>
                 <Route path="/farmaceutico/dispensacion" element={<DispensingPage />} />
+              </Route>
+
+              <Route element={<RequireRole roles={['director', 'auditor']} />}>
+                <Route path="/admin/resumen" element={<ResumenPage />} />
+                <Route path="/admin/usuarios" element={<UsersPage />} />
               </Route>
             </Route>
           </Route>
