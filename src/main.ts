@@ -30,6 +30,7 @@ async function bootstrap() {
     .addTag('documents', 'Certificados y constancias via TramitExpress')
     .addTag('admin', 'Vistas de solo lectura para Director y Auditor')
     .addTag('triaje', 'Triaje crítico: cola de casos evaluados por enfermería/médico')
+    .addTag('boveda-salud-mental', 'Registros de salud mental, sin delegación entre médicos')
     .build();
   SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config));
 

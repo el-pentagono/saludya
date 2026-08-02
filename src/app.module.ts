@@ -12,6 +12,7 @@ import { Treatment } from './modules/treatments/entities/treatment.entity';
 import { TreatmentFollowUp } from './modules/treatments/entities/treatment-follow-up.entity';
 import { Document } from './modules/documents/entities/document.entity';
 import { TriajeCritico } from './modules/triaje-critico/entities/triaje-critico.entity';
+import { RegistroSaludMental } from './modules/boveda-salud-mental/entities/registro-salud-mental.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsuariosModule } from './modules/usuarios/usuarios.module';
 import { ObrasSocialesModule } from './modules/obras-sociales/obras-sociales.module';
@@ -22,6 +23,7 @@ import { TreatmentsModule } from './modules/treatments/treatments.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { TriajeCriticoModule } from './modules/triaje-critico/triaje-critico.module';
+import { BovedaSaludMentalModule } from './modules/boveda-salud-mental/boveda-salud-mental.module';
 
 @Module({
   imports: [
@@ -35,13 +37,13 @@ import { TriajeCriticoModule } from './modules/triaje-critico/triaje-critico.mod
         username: config.get('database.username'),
         password: config.get('database.password'),
         database: config.get('database.database'),
-        entities: [Usuario, ObraSocial, Appointment, MedicalRecord, Treatment, TreatmentFollowUp, Document, TriajeCritico],
+        entities: [Usuario, ObraSocial, Appointment, MedicalRecord, Treatment, TreatmentFollowUp, Document, TriajeCritico, RegistroSaludMental],
         synchronize: config.get<boolean>('database.synchronize'),
         logging: config.get<boolean>('database.logging'),
         autoLoadEntities: true,
       }),
     }),
-    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule,
+    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule,
   ],
 })
 export class AppModule {}
