@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { StarOfLifeIcon } from './StarOfLifeIcon';
 
 function NavLinksPorRol({ rol }: { rol: string | undefined }) {
   if (rol === 'medico') {
@@ -47,7 +48,10 @@ export function Layout() {
   return (
     <div className="layout">
       <header className="topbar">
-        <span className="brand">SaludYa</span>
+        <span className="brand">
+          <StarOfLifeIcon size={22} />
+          <span className="brand-text">SaludYa</span>
+        </span>
         <nav>
           <NavLink to="/" end>
             Inicio

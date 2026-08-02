@@ -1,16 +1,16 @@
 :root {
-  /* Sistema de colores oficial El Pentágono — sector Salud */
-  --color-bg: #f0f7f4;
+  /* Sistema de colores oficial El Pentágono — sector Salud (turquesa, logo SaludYa) */
+  --color-bg: #eff9fa;
   --color-surface: #ffffff;
-  --color-border: #d4ece4;
+  --color-border: #cfeaee;
   --color-text: #1a1a1a;
   --color-text-muted: #888;
   --color-text-subtle: #aaa;
-  --color-primary: #0d6e55;
-  --color-primary-hover: #0a4f3c;
-  --color-primary-dark: #0a4f3c;
-  --color-accent: #7ecfb8;
-  --color-on-primary: #a8d8ca;
+  --color-primary: #0089a8;
+  --color-primary-hover: #045364;
+  --color-primary-dark: #045364;
+  --color-accent: #47bcce;
+  --color-on-primary: #b8e4ea;
   --color-error: #b91c1c;
   --color-error-bg: #fef2f2;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -118,7 +118,17 @@ label {
 }
 
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-accent);
+}
+
+.brand-text {
+  font-family: 'Fraunces', Georgia, serif;
   font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.01em;
   color: #ffffff;
 }
 
