@@ -3,7 +3,14 @@ import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { RequireRole } from './components/RequireRole';
 import { AuthProvider } from './context/AuthContext';
+import { AmbientAiPage as AdminAmbientAiPage } from './pages/admin/AmbientAiPage';
+import { BovedaPage as AdminBovedaPage } from './pages/admin/BovedaPage';
+import { DocumentosPage as AdminDocumentosPage } from './pages/admin/DocumentosPage';
+import { HistoriaClinicaPage as AdminHistoriaClinicaPage } from './pages/admin/HistoriaClinicaPage';
 import { ResumenPage } from './pages/admin/ResumenPage';
+import { TratamientosPage as AdminTratamientosPage } from './pages/admin/TratamientosPage';
+import { TriagePage as AdminTriagePage } from './pages/admin/TriagePage';
+import { TurnosPage as AdminTurnosPage } from './pages/admin/TurnosPage';
 import { UsersPage } from './pages/admin/UsersPage';
 import { AppointmentsPage } from './pages/AppointmentsPage';
 import { BovedaSaludMentalPage } from './pages/BovedaSaludMentalPage';
@@ -84,6 +91,13 @@ export default function App() {
               <Route element={<RequireRole roles={['director', 'auditor']} />}>
                 <Route path="/admin/resumen" element={<ResumenPage />} />
                 <Route path="/admin/usuarios" element={<UsersPage />} />
+                <Route path="/admin/turnos" element={<AdminTurnosPage />} />
+                <Route path="/admin/tratamientos" element={<AdminTratamientosPage />} />
+                <Route path="/admin/documentos" element={<AdminDocumentosPage />} />
+                <Route path="/admin/triaje" element={<AdminTriagePage />} />
+                <Route path="/admin/historia-clinica" element={<AdminHistoriaClinicaPage />} />
+                <Route path="/admin/boveda-salud-mental" element={<AdminBovedaPage />} />
+                <Route path="/admin/ambient-ai" element={<AdminAmbientAiPage />} />
               </Route>
             </Route>
           </Route>

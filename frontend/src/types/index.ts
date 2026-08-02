@@ -68,6 +68,7 @@ export type TipoDocumento = 'constancia_atencion' | 'certificado_tratamiento';
 export interface DocumentoEmitido {
   id: string;
   pacienteId: string;
+  paciente?: PersonaResumen;
   tipo: TipoDocumento;
   appointmentId?: string;
   treatmentId?: string;

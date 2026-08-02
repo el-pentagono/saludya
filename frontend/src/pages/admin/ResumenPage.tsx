@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { obtenerResumenAdmin } from '../../api/admin';
 import type { AdminResumen } from '../../types';
 
@@ -59,6 +60,31 @@ export function ResumenPage() {
           <h2>Historias clínicas</h2>
           <p className="stat-numero">{resumen.totalHistoriasClinicas}</p>
         </div>
+      </div>
+
+      <h2>Ver todo el sistema</h2>
+      <div className="cards">
+        <Link className="card" to="/admin/turnos">
+          Turnos
+        </Link>
+        <Link className="card" to="/admin/tratamientos">
+          Tratamientos
+        </Link>
+        <Link className="card" to="/admin/documentos">
+          Documentos
+        </Link>
+        <Link className="card" to="/admin/triaje">
+          Triaje crítico
+        </Link>
+        <Link className="card" to="/admin/historia-clinica">
+          Historia clínica
+        </Link>
+        <Link className="card" to="/admin/boveda-salud-mental">
+          Bóveda salud mental
+        </Link>
+        <Link className="card" to="/admin/ambient-ai">
+          Ambient AI
+        </Link>
       </div>
     </div>
   );

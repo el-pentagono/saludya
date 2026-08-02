@@ -7,6 +7,9 @@ export interface CrearEntradaInput {
   notas?: string;
 }
 
+export const listarTodasHistoriasClinicas = () =>
+  apiClient.get<MedicalRecordEntry[]>('/api/medical-records').then((r) => r.data);
+
 export const listarHistoriaClinica = (pacienteId: string) =>
   apiClient
     .get<MedicalRecordEntry[]>(`/api/medical-records/paciente/${pacienteId}`)
