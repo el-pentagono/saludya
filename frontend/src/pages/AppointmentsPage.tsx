@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { cancelarTurno, listarTurnos, reservarTurno } from '../api/appointments';
 import { extraerMensajeError } from '../api/errors';
+import { obtenerSalaTeleconsult } from '../api/teleconsult';
 import { listarMedicos } from '../api/usuarios';
 import type { Appointment, Medico } from '../types';
 
@@ -55,6 +56,16 @@ export function AppointmentsPage() {
       cargarTurnos();
     } catch (err) {
       setError(extraerMensajeError(err, 'No se pudo cancelar el turno'));
+    }
+  };
+
+  const onUnirseVideollamada = async (id: string) => {
+    setError(null);
+    try {
+      const { salaUrl } = await obtenerSalaTeleconsult(id);
+      window.open(salaUrl, '_blank', 'noopener,noreferrer');
+    } catch (err) {
+      setError(extraerMensajeError(err, 'No se pudo obtener la sala de videollamada'));
     }
   };
 
@@ -113,9 +124,12 @@ export function AppointmentsPage() {
               <td>
                 <span className={`badge badge-${t.estado}`}>{t.estado}</span>
               </td>
-              <td>
+              <td className="acciones">
                 {t.estado === 'pendiente' && (
-                  <button onClick={() => onCancelar(t.id)}>Cancelar</button>
+                  <>
+                    <button onClick={() => onUnirseVideollamada(t.id)}>Videollamada</button>
+                    <button onClick={() => onCancelar(t.id)}>Cancelar</button>
+                  </>
                 )}
               </td>
             </tr>

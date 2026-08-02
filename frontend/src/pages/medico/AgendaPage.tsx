@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { listarTurnos } from '../../api/appointments';
 import { cerrarTurnoExpress } from '../../api/cierreExpress';
 import { extraerMensajeError } from '../../api/errors';
+import { obtenerSalaTeleconsult } from '../../api/teleconsult';
 import type { Appointment } from '../../types';
 
 export function AgendaPage() {
@@ -42,6 +43,16 @@ export function AgendaPage() {
     }
   };
 
+  const onUnirseVideollamada = async (id: string) => {
+    setError(null);
+    try {
+      const { salaUrl } = await obtenerSalaTeleconsult(id);
+      window.open(salaUrl, '_blank', 'noopener,noreferrer');
+    } catch (err) {
+      setError(extraerMensajeError(err, 'No se pudo obtener la sala de videollamada'));
+    }
+  };
+
   return (
     <div>
       <h1>Mi agenda</h1>
@@ -70,6 +81,7 @@ export function AgendaPage() {
                 <td className="acciones">
                   {t.estado === 'pendiente' && (
                     <>
+                      <button onClick={() => onUnirseVideollamada(t.id)}>Videollamada</button>
                       <button onClick={() => abrirCierre(t.id)}>Cerrar turno</button>
                       <Link to={`/medico/pacientes/${t.pacienteId}/historia-clinica`}>
                         Historia clínica
