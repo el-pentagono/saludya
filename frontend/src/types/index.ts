@@ -26,11 +26,14 @@ export interface Usuario extends UsuarioResumen {
   fechaRegistro: string;
 }
 
-export interface Medico {
+export interface PersonaResumen {
   id: string;
   nombre: string;
   apellido: string;
 }
+
+/** Alias semántico: misma forma que PersonaResumen, usado en GET /api/usuarios/medicos */
+export type Medico = PersonaResumen;
 
 export type EstadoTurno = 'pendiente' | 'cancelado' | 'cerrado';
 export type EstadoLiquidacion = 'no_aplica' | 'pendiente';
@@ -38,8 +41,9 @@ export type EstadoLiquidacion = 'no_aplica' | 'pendiente';
 export interface Appointment {
   id: string;
   pacienteId: string;
+  paciente?: PersonaResumen;
   medicoId: string;
-  medico?: Medico;
+  medico?: PersonaResumen;
   fecha: string;
   motivo?: string;
   estado: EstadoTurno;
@@ -51,8 +55,9 @@ export interface Appointment {
 export interface MedicalRecordEntry {
   id: string;
   pacienteId: string;
+  paciente?: PersonaResumen;
   medicoId: string;
-  medico?: Medico;
+  medico?: PersonaResumen;
   diagnostico: string;
   notas?: string;
   fecha: string;
@@ -69,4 +74,25 @@ export interface DocumentoEmitido {
   numeroConstancia: string;
   urlDescarga: string;
   fechaEmision: string;
+}
+
+export type EstadoTratamiento = 'prescrito' | 'dispensado';
+
+export interface Treatment {
+  id: string;
+  pacienteId: string;
+  paciente?: PersonaResumen;
+  medicoId: string;
+  medico?: PersonaResumen;
+  medicamento: string;
+  dosis: string;
+  indicaciones?: string;
+  estado: EstadoTratamiento;
+  fechaCreacion: string;
+}
+
+export interface CierreExpressResultado {
+  turno: Appointment;
+  documento: DocumentoEmitido;
+  entradaClinica: MedicalRecordEntry;
 }

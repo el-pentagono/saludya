@@ -51,7 +51,8 @@ button:disabled {
 }
 
 input,
-select {
+select,
+textarea {
   font: inherit;
   padding: 0.5rem;
   border: 1px solid var(--color-border);
@@ -213,6 +214,46 @@ label {
 .badge-cancelado {
   background: #fee2e2;
   color: #991b1b;
+}
+
+.badge-prescrito {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-dispensado {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.acciones a {
+  font-size: 0.85rem;
+}
+
+.cierre-inline {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: var(--color-bg);
+  border-radius: 8px;
+}
+
+.cierre-inline label {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.cierre-inline-botones {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .lista-entradas {

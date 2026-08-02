@@ -6,6 +6,7 @@ import type { Appointment } from '../types';
 
 export function DashboardPage() {
   const { usuario } = useAuth();
+  const esMedico = usuario?.rol === 'medico';
   const [turnos, setTurnos] = useState<Appointment[]>([]);
 
   useEffect(() => {
@@ -24,21 +25,34 @@ export function DashboardPage() {
       <h1>Hola, {usuario?.nombre}</h1>
 
       <div className="cards">
-        <Link className="card" to="/turnos">
-          Mis turnos
-        </Link>
-        <Link className="card" to="/historia-clinica">
-          Historia clínica
-        </Link>
-        <Link className="card" to="/documentos">
-          Documentos
-        </Link>
+        {esMedico ? (
+          <>
+            <Link className="card" to="/medico/agenda">
+              Mi agenda
+            </Link>
+            <Link className="card" to="/medico/tratamientos">
+              Tratamientos prescritos
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link className="card" to="/turnos">
+              Mis turnos
+            </Link>
+            <Link className="card" to="/historia-clinica">
+              Historia clínica
+            </Link>
+            <Link className="card" to="/documentos">
+              Documentos
+            </Link>
+          </>
+        )}
         <Link className="card" to="/perfil">
           Mi perfil
         </Link>
       </div>
 
-      <h2>Próximos turnos</h2>
+      <h2>{esMedico ? 'Próximos turnos de tu agenda' : 'Próximos turnos'}</h2>
       {proximos.length === 0 ? (
         <p>No tenés turnos pendientes.</p>
       ) : (
@@ -46,7 +60,9 @@ export function DashboardPage() {
           {proximos.map((t) => (
             <li key={t.id}>
               {new Date(t.fecha).toLocaleString('es-AR')}
-              {t.medico && ` — Dr/a. ${t.medico.nombre} ${t.medico.apellido}`}
+              {esMedico
+                ? t.paciente && ` — ${t.paciente.nombre} ${t.paciente.apellido}`
+                : t.medico && ` — Dr/a. ${t.medico.nombre} ${t.medico.apellido}`}
             </li>
           ))}
         </ul>
