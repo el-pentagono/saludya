@@ -1,11 +1,16 @@
 :root {
-  --color-bg: #f5f7fa;
+  /* Sistema de colores oficial El Pentágono — sector Salud */
+  --color-bg: #f0f7f4;
   --color-surface: #ffffff;
-  --color-border: #e0e4e9;
-  --color-text: #1f2937;
-  --color-text-muted: #6b7280;
-  --color-primary: #0f766e;
-  --color-primary-hover: #0d5f58;
+  --color-border: #d4ece4;
+  --color-text: #1a1a1a;
+  --color-text-muted: #888;
+  --color-text-subtle: #aaa;
+  --color-primary: #0d6e55;
+  --color-primary-hover: #0a4f3c;
+  --color-primary-dark: #0a4f3c;
+  --color-accent: #7ecfb8;
+  --color-on-primary: #a8d8ca;
   --color-error: #b91c1c;
   --color-error-bg: #fef2f2;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -47,6 +52,7 @@ button:hover {
 
 button:disabled {
   background: var(--color-border);
+  color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
@@ -107,13 +113,13 @@ label {
   align-items: center;
   gap: 1.5rem;
   padding: 0.75rem 1.5rem;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--color-primary);
+  border-bottom: 1px solid var(--color-primary-dark);
 }
 
 .brand {
   font-weight: 700;
-  color: var(--color-primary);
+  color: #ffffff;
 }
 
 .topbar nav {
@@ -124,12 +130,12 @@ label {
 
 .topbar nav a {
   text-decoration: none;
-  color: var(--color-text-muted);
+  color: var(--color-on-primary);
   font-size: 0.9rem;
 }
 
 .topbar nav a.active {
-  color: var(--color-primary);
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -138,6 +144,19 @@ label {
   align-items: center;
   gap: 0.75rem;
   font-size: 0.9rem;
+  color: var(--color-on-primary);
+}
+
+.topbar button {
+  background: transparent;
+  border: 1px solid var(--color-on-primary);
+  color: var(--color-on-primary);
+}
+
+.topbar button:hover {
+  background: var(--color-primary-dark);
+  color: #ffffff;
+  border-color: #ffffff;
 }
 
 .content {
@@ -164,6 +183,11 @@ label {
   color: var(--color-text);
   font-weight: 600;
   text-align: center;
+  transition: border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--color-accent);
 }
 
 .inline-form {
