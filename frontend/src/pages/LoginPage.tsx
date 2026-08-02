@@ -27,7 +27,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page login-page">
       <form className="auth-form" onSubmit={onSubmit}>
         <h1>Ingresar a SaludYa</h1>
         {error && <p className="error">{error}</p>}
