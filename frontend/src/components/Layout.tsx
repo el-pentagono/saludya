@@ -6,6 +6,7 @@ function NavLinksPorRol({ rol }: { rol: string | undefined }) {
     return (
       <>
         <NavLink to="/medico/agenda">Mi agenda</NavLink>
+        <NavLink to="/medico/triaje">Triaje crítico</NavLink>
         <NavLink to="/medico/tratamientos">Tratamientos</NavLink>
       </>
     );

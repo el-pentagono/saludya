@@ -15,6 +15,7 @@ import { DispensingPage } from './pages/farmaceutico/DispensingPage';
 import { LoginPage } from './pages/LoginPage';
 import { MedicalRecordsPage } from './pages/MedicalRecordsPage';
 import { AgendaPage } from './pages/medico/AgendaPage';
+import { MedicoTriagePage } from './pages/medico/MedicoTriagePage';
 import { PatientRecordPage } from './pages/medico/PatientRecordPage';
 import { PrescribePage } from './pages/medico/PrescribePage';
 import { TreatmentsPage } from './pages/medico/TreatmentsPage';
@@ -41,6 +42,7 @@ export default function App() {
 
               <Route element={<RequireRole roles={['medico']} />}>
                 <Route path="/medico/agenda" element={<AgendaPage />} />
+                <Route path="/medico/triaje" element={<MedicoTriagePage />} />
                 <Route path="/medico/tratamientos" element={<TreatmentsPage />} />
                 <Route
                   path="/medico/pacientes/:pacienteId/historia-clinica"

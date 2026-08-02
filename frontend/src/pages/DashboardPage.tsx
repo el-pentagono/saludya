@@ -14,6 +14,9 @@ function CardsPorRol({ rol }: { rol: string | undefined }) {
         <Link className="card" to="/medico/agenda">
           Mi agenda
         </Link>
+        <Link className="card" to="/medico/triaje">
+          Triaje crítico
+        </Link>
         <Link className="card" to="/medico/tratamientos">
           Tratamientos prescritos
         </Link>

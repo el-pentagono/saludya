@@ -15,3 +15,9 @@ export const crearTriaje = (input: CrearTriajeInput) =>
 
 export const cancelarTriaje = (id: string) =>
   apiClient.patch<TriajeCaso>(`/api/triaje/${id}/cancelar`).then((r) => r.data);
+
+export const asignarTriaje = (id: string) =>
+  apiClient.patch<TriajeCaso>(`/api/triaje/${id}/asignar`).then((r) => r.data);
+
+export const atenderTriaje = (id: string) =>
+  apiClient.patch<TriajeCaso>(`/api/triaje/${id}/atender`).then((r) => r.data);
