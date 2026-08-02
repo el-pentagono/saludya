@@ -1,0 +1,23 @@
+{
+  "name": "SaludYa",
+  "short_name": "SaludYa",
+  "description": "Plataforma de salud digital: turnos, historia clínica, teleconsulta y más",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eff9fa",
+  "theme_color": "#0089a8",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
