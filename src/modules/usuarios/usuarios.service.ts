@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
+import { Rol } from '../../common/enums/rol.enum';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Usuario } from './entities/usuario.entity';
@@ -19,6 +20,14 @@ export class UsuariosService {
 
   async findAll() {
     return this.repo.find({ order: { fechaRegistro: 'DESC' } });
+  }
+
+  async listarMedicos() {
+    return this.repo.find({
+      where: { rol: Rol.MEDICO, activo: true },
+      select: ['id', 'nombre', 'apellido'],
+      order: { apellido: 'ASC' },
+    });
   }
 
   async findOne(id: string) {

@@ -37,8 +37,9 @@ describe('UsuariosController — guards y roles por endpoint', () => {
     expect(obtenerRolesDeMetodo(UsuariosController.prototype.desactivar)).toEqual([Rol.DIRECTOR]);
   });
 
-  it('miPerfil, update: sin restricción de rol (acceso al propio usuario)', () => {
+  it('miPerfil, update, listarMedicos: sin restricción de rol', () => {
     expect(obtenerRolesDeMetodo(UsuariosController.prototype.miPerfil)).toBeUndefined();
     expect(obtenerRolesDeMetodo(UsuariosController.prototype.update)).toBeUndefined();
+    expect(obtenerRolesDeMetodo(UsuariosController.prototype.listarMedicos)).toBeUndefined();
   });
 });

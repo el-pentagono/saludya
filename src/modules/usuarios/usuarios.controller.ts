@@ -39,6 +39,12 @@ export class UsuariosController {
     return this.service.findOne(usuario.id);
   }
 
+  @Get('medicos')
+  @ApiOperation({ summary: 'Listar médicos activos (para elegir al reservar un turno)' })
+  listarMedicos() {
+    return this.service.listarMedicos();
+  }
+
   @Get(':id')
   @Roles(Rol.DIRECTOR, Rol.AUDITOR)
   @ApiOperation({ summary: 'Ver usuario por ID' })
