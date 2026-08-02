@@ -42,4 +42,13 @@ describe('UsuariosController — guards y roles por endpoint', () => {
     expect(obtenerRolesDeMetodo(UsuariosController.prototype.update)).toBeUndefined();
     expect(obtenerRolesDeMetodo(UsuariosController.prototype.listarMedicos)).toBeUndefined();
   });
+
+  it('buscarPacientePorDni: ENFERMERO, MEDICO, DIRECTOR y AUDITOR', () => {
+    expect(obtenerRolesDeMetodo(UsuariosController.prototype.buscarPacientePorDni)).toEqual([
+      Rol.ENFERMERO,
+      Rol.MEDICO,
+      Rol.DIRECTOR,
+      Rol.AUDITOR,
+    ]);
+  });
 });

@@ -30,6 +30,15 @@ export class UsuariosService {
     });
   }
 
+  async buscarPacientePorDni(dni: string) {
+    const paciente = await this.repo.findOne({
+      where: { dni, rol: Rol.PACIENTE },
+      select: ['id', 'nombre', 'apellido', 'dni'],
+    });
+    if (!paciente) throw new NotFoundException(`No se encontró un paciente con DNI ${dni}`);
+    return paciente;
+  }
+
   async findOne(id: string) {
     const usuario = await this.repo.findOne({
       where: { id },

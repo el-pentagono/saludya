@@ -1,5 +1,5 @@
 import apiClient from './client';
-import type { Treatment } from '../types';
+import type { Treatment, TreatmentFollowUp } from '../types';
 
 export interface PrescribirTratamientoInput {
   pacienteId: string;
@@ -13,3 +13,13 @@ export const listarTratamientos = () =>
 
 export const prescribirTratamiento = (input: PrescribirTratamientoInput) =>
   apiClient.post<Treatment>('/api/treatments', input).then((r) => r.data);
+
+export const listarSeguimientos = (treatmentId: string) =>
+  apiClient
+    .get<TreatmentFollowUp[]>(`/api/treatments/${treatmentId}/seguimientos`)
+    .then((r) => r.data);
+
+export const agregarSeguimiento = (treatmentId: string, nota: string) =>
+  apiClient
+    .post<TreatmentFollowUp>(`/api/treatments/${treatmentId}/seguimientos`, { nota })
+    .then((r) => r.data);

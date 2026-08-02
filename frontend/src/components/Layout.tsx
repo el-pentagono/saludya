@@ -1,9 +1,34 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+function NavLinksPorRol({ rol }: { rol: string | undefined }) {
+  if (rol === 'medico') {
+    return (
+      <>
+        <NavLink to="/medico/agenda">Mi agenda</NavLink>
+        <NavLink to="/medico/tratamientos">Tratamientos</NavLink>
+      </>
+    );
+  }
+  if (rol === 'enfermero') {
+    return (
+      <>
+        <NavLink to="/enfermero/triaje">Triaje crítico</NavLink>
+        <NavLink to="/enfermero/tratamientos">Seguimiento</NavLink>
+      </>
+    );
+  }
+  return (
+    <>
+      <NavLink to="/turnos">Mis turnos</NavLink>
+      <NavLink to="/historia-clinica">Historia clínica</NavLink>
+      <NavLink to="/documentos">Documentos</NavLink>
+    </>
+  );
+}
+
 export function Layout() {
   const { usuario, logout } = useAuth();
-  const esMedico = usuario?.rol === 'medico';
 
   return (
     <div className="layout">
@@ -13,18 +38,7 @@ export function Layout() {
           <NavLink to="/" end>
             Inicio
           </NavLink>
-          {esMedico ? (
-            <>
-              <NavLink to="/medico/agenda">Mi agenda</NavLink>
-              <NavLink to="/medico/tratamientos">Tratamientos</NavLink>
-            </>
-          ) : (
-            <>
-              <NavLink to="/turnos">Mis turnos</NavLink>
-              <NavLink to="/historia-clinica">Historia clínica</NavLink>
-              <NavLink to="/documentos">Documentos</NavLink>
-            </>
-          )}
+          <NavLinksPorRol rol={usuario?.rol} />
           <NavLink to="/perfil">Perfil</NavLink>
         </nav>
         <div className="usuario-actual">

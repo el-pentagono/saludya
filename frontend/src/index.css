@@ -226,6 +226,41 @@ label {
   color: #065f46;
 }
 
+.badge-en_espera {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-asignado {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-atendido {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-baja {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.badge-media {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-alta {
+  background: #fed7aa;
+  color: #9a3412;
+}
+
+.badge-critica {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 .acciones {
   display: flex;
   gap: 0.5rem;

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -43,6 +44,13 @@ export class UsuariosController {
   @ApiOperation({ summary: 'Listar médicos activos (para elegir al reservar un turno)' })
   listarMedicos() {
     return this.service.listarMedicos();
+  }
+
+  @Get('pacientes/buscar')
+  @Roles(Rol.ENFERMERO, Rol.MEDICO, Rol.DIRECTOR, Rol.AUDITOR)
+  @ApiOperation({ summary: 'Buscar un paciente por DNI (para cargar un triaje, etc.)' })
+  buscarPacientePorDni(@Query('dni') dni: string) {
+    return this.service.buscarPacientePorDni(dni);
   }
 
   @Get(':id')

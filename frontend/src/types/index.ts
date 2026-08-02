@@ -96,3 +96,31 @@ export interface CierreExpressResultado {
   documento: DocumentoEmitido;
   entradaClinica: MedicalRecordEntry;
 }
+
+export interface TreatmentFollowUp {
+  id: string;
+  treatmentId: string;
+  enfermeroId: string;
+  enfermero?: PersonaResumen;
+  nota: string;
+  fecha: string;
+}
+
+export type PrioridadTriaje = 'baja' | 'media' | 'alta' | 'critica';
+export type EstadoTriaje = 'en_espera' | 'asignado' | 'atendido' | 'cancelado';
+
+export interface TriajeCaso {
+  id: string;
+  pacienteId: string;
+  paciente?: PersonaResumen;
+  evaluadorId: string;
+  evaluador?: PersonaResumen;
+  observaciones: string;
+  prioridad: PrioridadTriaje;
+  estado: EstadoTriaje;
+  medicoAsignadoId?: string;
+  medicoAsignado?: PersonaResumen;
+  appointmentId?: string;
+  fechaCreacion: string;
+  fechaAsignacion?: string;
+}
