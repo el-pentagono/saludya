@@ -29,6 +29,7 @@ async function bootstrap() {
     .addTag('treatments', 'Seguimiento de tratamientos y prescripciones')
     .addTag('documents', 'Certificados y constancias via TramitExpress')
     .addTag('admin', 'Vistas de solo lectura para Director y Auditor')
+    .addTag('triaje', 'Triaje crítico: cola de casos evaluados por enfermería/médico')
     .build();
   SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config));
 
