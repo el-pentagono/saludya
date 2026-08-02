@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AppointmentsService } from '../appointments/appointments.service';
+import { Appointment } from '../appointments/entities/appointment.entity';
 import { EstadoTurno } from '../../common/enums/estado-turno.enum';
 import { Rol } from '../../common/enums/rol.enum';
 import { TipoDocumento } from '../../common/enums/tipo-documento.enum';
@@ -26,7 +27,19 @@ export class DocumentsService {
 
   async generarConstanciaAtencion(paciente: Usuario, appointmentId: string) {
     const turno = await this.appointmentsService.buscarPorId(appointmentId, paciente);
+    return this.emitirConstanciaAtencion(turno);
+  }
 
+  /**
+   * Usado por Cierre Express: el turno ya fue validado (médico dueño, PENDIENTE
+   * en el momento del cierre) por AppointmentsService.cerrar(), así que no se
+   * revalida acá — solo se emite la constancia.
+   */
+  async generarConstanciaAtencionParaTurno(turno: Appointment) {
+    return this.emitirConstanciaAtencion(turno);
+  }
+
+  private async emitirConstanciaAtencion(turno: Appointment) {
     if (turno.estado === EstadoTurno.CANCELADO) {
       throw new BadRequestException('No se puede generar una constancia de un turno cancelado');
     }
@@ -36,13 +49,13 @@ export class DocumentsService {
 
     const resultado = await this.tramitExpress.generarCertificado({
       tipo: TipoDocumento.CONSTANCIA_ATENCION,
-      pacienteId: paciente.id,
-      pacienteNombre: `${paciente.nombre} ${paciente.apellido}`,
+      pacienteId: turno.pacienteId,
+      pacienteNombre: `${turno.paciente.nombre} ${turno.paciente.apellido}`,
       contenido: { appointmentId: turno.id, fecha: turno.fecha, medicoId: turno.medicoId },
     });
 
     const documento = this.repo.create({
-      pacienteId: paciente.id,
+      pacienteId: turno.pacienteId,
       tipo: TipoDocumento.CONSTANCIA_ATENCION,
       appointmentId: turno.id,
       tramiteId: resultado.tramiteId,

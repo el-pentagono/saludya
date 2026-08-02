@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { EstadoLiquidacion } from '../../common/enums/estado-liquidacion.enum';
 import { EstadoTurno } from '../../common/enums/estado-turno.enum';
 import { Rol } from '../../common/enums/rol.enum';
 import { Usuario } from '../usuarios/entities/usuario.entity';
@@ -86,11 +87,31 @@ export class AppointmentsService {
     if (!esParte && usuario.rol !== Rol.DIRECTOR) {
       throw new ForbiddenException('No podés cancelar este turno');
     }
-    if (turno.estado === EstadoTurno.CANCELADO) {
-      throw new BadRequestException('El turno ya está cancelado');
+    if (turno.estado !== EstadoTurno.PENDIENTE) {
+      throw new BadRequestException('Solo se puede cancelar un turno pendiente');
     }
 
     turno.estado = EstadoTurno.CANCELADO;
+    return this.repo.save(turno);
+  }
+
+  async cerrar(
+    medico: Usuario,
+    id: string,
+    params: { diagnostico: string; obraSocialLiquidacionId: string | null },
+  ) {
+    const turno = await this.buscarPorId(id, medico);
+    if (turno.estado !== EstadoTurno.PENDIENTE) {
+      throw new BadRequestException('Solo se puede cerrar un turno pendiente');
+    }
+
+    turno.estado = EstadoTurno.CERRADO;
+    turno.diagnosticoCierre = params.diagnostico;
+    turno.obraSocialLiquidacionId = params.obraSocialLiquidacionId;
+    turno.estadoLiquidacion = params.obraSocialLiquidacionId
+      ? EstadoLiquidacion.PENDIENTE
+      : EstadoLiquidacion.NO_APLICA;
+
     return this.repo.save(turno);
   }
 

@@ -230,6 +230,73 @@ describe('AppointmentsService', () => {
         NotFoundException,
       );
     });
+
+    it('rechaza cancelar un turno ya cerrado', async () => {
+      repo.findOne.mockResolvedValue({ ...turnoPendiente(), estado: EstadoTurno.CERRADO });
+
+      await expect(service.cancelar('turno-1', paciente)).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('cerrar', () => {
+    const turnoPendiente = () =>
+      ({
+        id: 'turno-1',
+        pacienteId: paciente.id,
+        medicoId: medico.id,
+        estado: EstadoTurno.PENDIENTE,
+      }) as Appointment;
+
+    it('cierra el turno, guarda el diagnóstico y marca liquidación PENDIENTE si hay obra social', async () => {
+      repo.findOne.mockResolvedValue(turnoPendiente());
+
+      const resultado = await service.cerrar(medico, 'turno-1', {
+        diagnostico: 'Control de rutina',
+        obraSocialLiquidacionId: 'obra-social-1',
+      });
+
+      expect(resultado.estado).toBe(EstadoTurno.CERRADO);
+      expect(resultado.diagnosticoCierre).toBe('Control de rutina');
+      expect(resultado.obraSocialLiquidacionId).toBe('obra-social-1');
+      expect(resultado.estadoLiquidacion).toBe('pendiente');
+    });
+
+    it('marca liquidación NO_APLICA si el paciente no tiene obra social', async () => {
+      repo.findOne.mockResolvedValue(turnoPendiente());
+
+      const resultado = await service.cerrar(medico, 'turno-1', {
+        diagnostico: 'Control de rutina',
+        obraSocialLiquidacionId: null,
+      });
+
+      expect(resultado.estadoLiquidacion).toBe('no_aplica');
+      expect(resultado.obraSocialLiquidacionId).toBeNull();
+    });
+
+    it('rechaza cerrar un turno que no está pendiente', async () => {
+      repo.findOne.mockResolvedValue({ ...turnoPendiente(), estado: EstadoTurno.CANCELADO });
+
+      await expect(
+        service.cerrar(medico, 'turno-1', { diagnostico: 'x', obraSocialLiquidacionId: null }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('rechaza a un médico que no es el del turno', async () => {
+      const otroMedico = { id: 'medico-2', rol: Rol.MEDICO } as Usuario;
+      repo.findOne.mockResolvedValue(turnoPendiente());
+
+      await expect(
+        service.cerrar(otroMedico, 'turno-1', { diagnostico: 'x', obraSocialLiquidacionId: null }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('lanza NotFoundException si el turno no existe', async () => {
+      repo.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.cerrar(medico, 'inexistente', { diagnostico: 'x', obraSocialLiquidacionId: null }),
+      ).rejects.toThrow(NotFoundException);
+    });
   });
 
   describe('existeVinculo', () => {

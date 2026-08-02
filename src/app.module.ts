@@ -26,6 +26,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { TriajeCriticoModule } from './modules/triaje-critico/triaje-critico.module';
 import { BovedaSaludMentalModule } from './modules/boveda-salud-mental/boveda-salud-mental.module';
 import { AmbientAiModule } from './modules/ambient-ai/ambient-ai.module';
+import { CierreExpressModule } from './modules/cierre-express/cierre-express.module';
 
 @Module({
   imports: [
@@ -45,7 +46,7 @@ import { AmbientAiModule } from './modules/ambient-ai/ambient-ai.module';
         autoLoadEntities: true,
       }),
     }),
-    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule, AmbientAiModule,
+    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule, AmbientAiModule, CierreExpressModule,
   ],
 })
 export class AppModule {}

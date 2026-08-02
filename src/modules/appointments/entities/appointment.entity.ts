@@ -7,7 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { EstadoLiquidacion } from '../../../common/enums/estado-liquidacion.enum';
 import { EstadoTurno } from '../../../common/enums/estado-turno.enum';
+import { ObraSocial } from '../../obras-sociales/entities/obra-social.entity';
 import { Usuario } from '../../usuarios/entities/usuario.entity';
 
 @Entity('appointments')
@@ -30,6 +32,16 @@ export class Appointment {
 
   @Column({ type: 'enum', enum: EstadoTurno, default: EstadoTurno.PENDIENTE })
   estado: EstadoTurno;
+
+  @Column({ nullable: true }) diagnosticoCierre: string;
+
+  @Column({ type: 'enum', enum: EstadoLiquidacion, default: EstadoLiquidacion.NO_APLICA })
+  estadoLiquidacion: EstadoLiquidacion;
+
+  @Column({ nullable: true }) obraSocialLiquidacionId: string;
+  @ManyToOne(() => ObraSocial, { eager: false, nullable: true })
+  @JoinColumn({ name: 'obraSocialLiquidacionId' })
+  obraSocialLiquidacion: ObraSocial;
 
   @CreateDateColumn() fechaCreacion: Date;
   @UpdateDateColumn() fechaActualizacion: Date;

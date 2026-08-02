@@ -58,6 +58,7 @@ describe('DocumentsService', () => {
     const turnoBase = {
       id: 'turno-1',
       pacienteId: paciente.id,
+      paciente,
       medicoId: medico.id,
       estado: EstadoTurno.PENDIENTE,
       fecha: new Date(Date.now() - 24 * 60 * 60 * 1000),
@@ -105,6 +106,37 @@ describe('DocumentsService', () => {
       await expect(service.generarConstanciaAtencion(paciente, 'turno-1')).rejects.toThrow(
         BadRequestException,
       );
+    });
+  });
+
+  describe('generarConstanciaAtencionParaTurno', () => {
+    const turnoCerrado = {
+      id: 'turno-2',
+      pacienteId: paciente.id,
+      paciente,
+      medicoId: medico.id,
+      estado: EstadoTurno.CERRADO,
+      fecha: new Date(Date.now() - 60 * 1000),
+    };
+
+    it('genera la constancia a partir de un turno ya validado (sin llamar a AppointmentsService)', async () => {
+      const resultado = await service.generarConstanciaAtencionParaTurno(turnoCerrado as any);
+
+      expect(appointmentsService.buscarPorId).not.toHaveBeenCalled();
+      expect(resultado).toMatchObject({
+        pacienteId: paciente.id,
+        appointmentId: 'turno-2',
+        tramiteId: 'tramite-1',
+      });
+    });
+
+    it('rechaza un turno cancelado', async () => {
+      await expect(
+        service.generarConstanciaAtencionParaTurno({
+          ...turnoCerrado,
+          estado: EstadoTurno.CANCELADO,
+        } as any),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 

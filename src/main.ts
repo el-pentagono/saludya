@@ -32,6 +32,7 @@ async function bootstrap() {
     .addTag('triaje', 'Triaje crítico: cola de casos evaluados por enfermería/médico')
     .addTag('boveda-salud-mental', 'Registros de salud mental, sin delegación entre médicos')
     .addTag('ambient-ai', 'Transcripción/resumen ambiental de consulta, mockeado')
+    .addTag('cierre-express', 'Cierre de turno en un solo paso: diagnóstico, constancia, historia clínica y liquidación')
     .build();
   SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config));
 
