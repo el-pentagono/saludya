@@ -52,6 +52,12 @@ describe('JwtGuard', () => {
     await expect(guard.canActivate(context)).rejects.toThrow(UnauthorizedException);
   });
 
+  it('el mensaje de rechazo está en español (no el "Unauthorized" por defecto de Nest)', async () => {
+    const { context } = crearContext({});
+
+    await expect(guard.canActivate(context)).rejects.toThrow('Sesión inválida o expirada');
+  });
+
   it('rechaza un token con firma inválida', async () => {
     const { context } = crearContext({ authorization: 'Bearer token-invalido' });
 

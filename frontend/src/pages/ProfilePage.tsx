@@ -21,7 +21,7 @@ export function ProfilePage() {
         <dd>
           {perfil.nombre} {perfil.apellido}
         </dd>
-        <dt>Email</dt>
+        <dt>Correo electrónico</dt>
         <dd>{perfil.email}</dd>
         <dt>DNI</dt>
         <dd>{perfil.dni}</dd>

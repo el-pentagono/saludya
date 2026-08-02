@@ -32,7 +32,7 @@ export function LoginPage() {
         <h1>Ingresar a SaludYa</h1>
         {error && <p className="error">{error}</p>}
         <label>
-          Email
+          Correo electrónico
           <input
             type="email"
             value={email}

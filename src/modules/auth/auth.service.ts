@@ -23,7 +23,7 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const existe = await this.usuariosRepo.findOne({ where: { email: dto.email } });
-    if (existe) throw new ConflictException('El email ya está registrado');
+    if (existe) throw new ConflictException('El correo electrónico ya está registrado');
 
     const dniExiste = await this.usuariosRepo.findOne({ where: { dni: dto.dni } });
     if (dniExiste) throw new ConflictException('El DNI ya está registrado');

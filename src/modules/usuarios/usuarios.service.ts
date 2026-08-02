@@ -50,7 +50,7 @@ export class UsuariosService {
 
   async create(dto: CreateUsuarioDto) {
     const emailExiste = await this.repo.findOne({ where: { email: dto.email } });
-    if (emailExiste) throw new ConflictException('Email ya registrado');
+    if (emailExiste) throw new ConflictException('Correo electrónico ya registrado');
 
     const hash = await bcrypt.hash(dto.password, 10);
     const usuario = this.repo.create({ ...dto, password: hash });

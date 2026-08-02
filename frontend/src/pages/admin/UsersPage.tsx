@@ -93,7 +93,7 @@ export function UsersPage() {
             <input value={form.dni} onChange={onChange('dni')} required />
           </label>
           <label>
-            Email
+            Correo electrónico
             <input type="email" value={form.email} onChange={onChange('email')} required />
           </label>
           <label>
@@ -126,7 +126,7 @@ export function UsersPage() {
         <thead>
           <tr>
             <th>Nombre</th>
-            <th>Email</th>
+            <th>Correo electrónico</th>
             <th>DNI</th>
             <th>Rol</th>
             <th>Estado</th>

@@ -1,14 +1,37 @@
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationError } from 'class-validator';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
+/**
+ * Traduce los mensajes de validacion que NestJS/class-validator no permiten
+ * personalizar por decorador (ej. forbidNonWhitelisted). Los que ya vienen
+ * en espanol desde el DTO (via `message:`) pasan sin tocar.
+ */
+function traducirErroresDeValidacion(errores: ValidationError[]) {
+  const mensajes = errores.flatMap((error) => {
+    if (error.constraints?.whitelistValidation) {
+      return [`El campo "${error.property}" no es válido`];
+    }
+    return Object.values(error.constraints ?? {});
+  });
+  return new BadRequestException(mensajes);
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      exceptionFactory: traducirErroresDeValidacion,
+    }),
+  );
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(
     new LoggingInterceptor(),

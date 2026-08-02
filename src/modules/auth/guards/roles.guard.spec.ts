@@ -1,4 +1,4 @@
-import { ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Rol } from '../../../common/enums/rol.enum';
 import { RolesGuard } from './roles.guard';
@@ -37,13 +37,23 @@ describe('RolesGuard', () => {
   it('rechaza el acceso si el rol del usuario no está en la lista requerida', () => {
     reflector.getAllAndOverride.mockReturnValue([Rol.MEDICO, Rol.DIRECTOR]);
 
-    expect(guard.canActivate(crearContext({ rol: Rol.PACIENTE }))).toBe(false);
+    expect(() => guard.canActivate(crearContext({ rol: Rol.PACIENTE }))).toThrow(
+      ForbiddenException,
+    );
   });
 
   it('rechaza el acceso si no hay usuario autenticado en el request', () => {
     reflector.getAllAndOverride.mockReturnValue([Rol.MEDICO]);
 
-    expect(guard.canActivate(crearContext(undefined))).toBe(false);
+    expect(() => guard.canActivate(crearContext(undefined))).toThrow(ForbiddenException);
+  });
+
+  it('el mensaje de rechazo está en español (no el "Forbidden resource" por defecto de Nest)', () => {
+    reflector.getAllAndOverride.mockReturnValue([Rol.MEDICO]);
+
+    expect(() => guard.canActivate(crearContext({ rol: Rol.PACIENTE }))).toThrow(
+      'No tenés permiso para acceder a este recurso',
+    );
   });
 
   it('usa getHandler y getClass como fuentes de metadata (override por handler)', () => {

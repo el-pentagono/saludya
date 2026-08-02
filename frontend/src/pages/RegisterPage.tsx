@@ -91,7 +91,7 @@ export function RegisterPage() {
           <input value={form.telefono} onChange={onChange('telefono')} />
         </label>
         <label>
-          Email
+          Correo electrónico
           <input type="email" value={form.email} onChange={onChange('email')} required />
         </label>
         <label>
