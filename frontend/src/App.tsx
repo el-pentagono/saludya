@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import { ProfessionalLayout } from './components/ProfessionalLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { RequireRole } from './components/RequireRole';
 import { AuthProvider } from './context/AuthContext';
@@ -32,6 +33,8 @@ import { PatientRecordPage } from './pages/medico/PatientRecordPage';
 import { PrescribePage } from './pages/medico/PrescribePage';
 import { StudyOrdersPage } from './pages/medico/StudyOrdersPage';
 import { TreatmentsPage } from './pages/medico/TreatmentsPage';
+import { ProfessionalDashboardPage } from './pages/profesionales/ProfessionalDashboardPage';
+import { ProfessionalLoginPage } from './pages/profesionales/ProfessionalLoginPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { RegisterPage } from './pages/RegisterPage';
 
@@ -40,9 +43,15 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Logins públicos diferenciados por portal */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/profesionales/login" element={<ProfessionalLoginPage />} />
           <Route path="/registro" element={<RegisterPage />} />
-          <Route element={<ProtectedRoute />}>
+
+          {/* ============================================================ */}
+          {/* PORTAL 1 — SALUDYA PACIENTES                                 */}
+          {/* ============================================================ */}
+          <Route element={<ProtectedRoute fallbackUrl="/login" />}>
             <Route element={<Layout />}>
               <Route path="/" element={<DashboardPage />} />
               <Route path="/perfil" element={<ProfilePage />} />
@@ -54,57 +63,88 @@ export default function App() {
                 <Route path="/documentos" element={<DocumentsPage />} />
                 <Route path="/boveda-salud-mental" element={<BovedaSaludMentalPage />} />
               </Route>
+            </Route>
+          </Route>
 
-              <Route element={<RequireRole roles={['medico']} />}>
-                <Route path="/medico/agenda" element={<AgendaPage />} />
-                <Route path="/medico/estudios" element={<StudyOrdersPage />} />
-                <Route path="/medico/triaje" element={<MedicoTriagePage />} />
-                <Route path="/medico/tratamientos" element={<TreatmentsPage />} />
-                <Route path="/medico/boveda-salud-mental" element={<BovedaListPage />} />
-                <Route
-                  path="/medico/pacientes/:pacienteId/historia-clinica"
-                  element={<PatientRecordPage />}
+          {/* ============================================================ */}
+          {/* PORTAL 2 — SALUDYA PROFESIONALES DE SALUD                   */}
+          {/* ============================================================ */}
+          <Route element={<ProtectedRoute fallbackUrl="/profesionales/login" />}>
+            <Route
+              element={
+                <RequireRole
+                  roles={['medico', 'enfermero', 'farmaceutico', 'director', 'auditor']}
+                  redirectUrl="/"
                 />
-                <Route
-                  path="/medico/pacientes/:pacienteId/prescribir"
-                  element={<PrescribePage />}
-                />
-                <Route
-                  path="/medico/pacientes/:pacienteId/boveda-salud-mental"
-                  element={<BovedaCreatePage />}
-                />
-                <Route
-                  path="/medico/turnos/:appointmentId/transcripcion"
-                  element={<AmbientAiPage />}
-                />
-              </Route>
+              }
+            >
+              <Route element={<ProfessionalLayout />}>
+                <Route path="/profesionales" element={<ProfessionalDashboardPage />} />
 
-              <Route element={<RequireRole roles={['enfermero']} />}>
-                <Route path="/enfermero/triaje" element={<TriagePage />} />
-                <Route path="/enfermero/tratamientos" element={<TreatmentFollowUpsPage />} />
+                {/* Sub-rutas Médico */}
+                <Route element={<RequireRole roles={['medico']} redirectUrl="/profesionales" />}>
+                  <Route path="/medico/agenda" element={<AgendaPage />} />
+                  <Route path="/medico/estudios" element={<StudyOrdersPage />} />
+                  <Route path="/medico/triaje" element={<MedicoTriagePage />} />
+                  <Route path="/medico/tratamientos" element={<TreatmentsPage />} />
+                  <Route path="/medico/boveda-salud-mental" element={<BovedaListPage />} />
+                  <Route
+                    path="/medico/pacientes/:pacienteId/historia-clinica"
+                    element={<PatientRecordPage />}
+                  />
+                  <Route
+                    path="/medico/pacientes/:pacienteId/prescribir"
+                    element={<PrescribePage />}
+                  />
+                  <Route
+                    path="/medico/pacientes/:pacienteId/boveda-salud-mental"
+                    element={<BovedaCreatePage />}
+                  />
+                  <Route
+                    path="/medico/turnos/:appointmentId/transcripcion"
+                    element={<AmbientAiPage />}
+                  />
+                </Route>
+
+                {/* Sub-rutas Enfermero */}
+                <Route element={<RequireRole roles={['enfermero']} redirectUrl="/profesionales" />}>
+                  <Route path="/enfermero/triaje" element={<TriagePage />} />
+                  <Route path="/enfermero/tratamientos" element={<TreatmentFollowUpsPage />} />
+                  <Route
+                    path="/enfermero/tratamientos/:treatmentId"
+                    element={<TreatmentFollowUpDetailPage />}
+                  />
+                </Route>
+
+                {/* Sub-rutas Farmacéutico */}
                 <Route
-                  path="/enfermero/tratamientos/:treatmentId"
-                  element={<TreatmentFollowUpDetailPage />}
-                />
-              </Route>
+                  element={
+                    <RequireRole roles={['farmaceutico']} redirectUrl="/profesionales" />
+                  }
+                >
+                  <Route path="/farmaceutico/dispensacion" element={<DispensingPage />} />
+                </Route>
 
-              <Route element={<RequireRole roles={['farmaceutico']} />}>
-                <Route path="/farmaceutico/dispensacion" element={<DispensingPage />} />
-              </Route>
-
-              <Route element={<RequireRole roles={['director', 'auditor']} />}>
-                <Route path="/admin/resumen" element={<ResumenPage />} />
-                <Route path="/admin/usuarios" element={<UsersPage />} />
-                <Route path="/admin/turnos" element={<AdminTurnosPage />} />
-                <Route path="/admin/tratamientos" element={<AdminTratamientosPage />} />
-                <Route path="/admin/documentos" element={<AdminDocumentosPage />} />
-                <Route path="/admin/triaje" element={<AdminTriagePage />} />
-                <Route path="/admin/historia-clinica" element={<AdminHistoriaClinicaPage />} />
-                <Route path="/admin/boveda-salud-mental" element={<AdminBovedaPage />} />
-                <Route path="/admin/ambient-ai" element={<AdminAmbientAiPage />} />
+                {/* Sub-rutas Director y Auditor */}
+                <Route
+                  element={
+                    <RequireRole roles={['director', 'auditor']} redirectUrl="/profesionales" />
+                  }
+                >
+                  <Route path="/admin/resumen" element={<ResumenPage />} />
+                  <Route path="/admin/usuarios" element={<UsersPage />} />
+                  <Route path="/admin/turnos" element={<AdminTurnosPage />} />
+                  <Route path="/admin/tratamientos" element={<AdminTratamientosPage />} />
+                  <Route path="/admin/documentos" element={<AdminDocumentosPage />} />
+                  <Route path="/admin/triaje" element={<AdminTriagePage />} />
+                  <Route path="/admin/historia-clinica" element={<AdminHistoriaClinicaPage />} />
+                  <Route path="/admin/boveda-salud-mental" element={<AdminBovedaPage />} />
+                  <Route path="/admin/ambient-ai" element={<AdminAmbientAiPage />} />
+                </Route>
               </Route>
             </Route>
           </Route>
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

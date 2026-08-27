@@ -706,3 +706,51 @@ label {
   font-size: 0.85rem;
   color: #0f766e;
 }
+
+/* ==========================================================================
+   Estilos específicos del Portal de Profesionales de Salud
+   ========================================================================== */
+.professional-login-page {
+  position: relative;
+  background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%);
+}
+
+.professional-login-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.15), transparent 70%);
+}
+
+.professional-login-page .auth-form {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.25);
+  border-color: #a7f3d0;
+}
+
+.professional-portal-layout .topbar nav a {
+  color: #d1fae5;
+}
+
+.professional-portal-layout .topbar nav a:hover {
+  color: #ffffff;
+}
+
+.professional-portal-layout .topbar nav a.active {
+  color: #ffffff;
+  border-bottom: 2px solid #34d399;
+}
+
+.badge-rol-activo {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 768px) {
+  .badge-rol-activo {
+    font-size: 0.72rem;
+    padding: 0.15rem 0.45rem;
+  }
+}
+

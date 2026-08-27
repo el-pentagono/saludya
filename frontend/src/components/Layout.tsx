@@ -1,73 +1,57 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { NotificationBell } from './NotificationBell';
-import { StarOfLifeIcon } from './StarOfLifeIcon';
-
-function NavLinksPorRol({ rol }: { rol: string | undefined }) {
-  if (rol === 'medico') {
-    return (
-      <>
-        <NavLink to="/medico/agenda">Mi agenda</NavLink>
-        <NavLink to="/medico/estudios">Órdenes de estudio</NavLink>
-        <NavLink to="/medico/tratamientos">Tratamientos</NavLink>
-        <NavLink to="/medico/triaje">Triaje crítico</NavLink>
-        <NavLink to="/medico/boveda-salud-mental">Bóveda salud mental</NavLink>
-      </>
-    );
-  }
-  if (rol === 'enfermero') {
-    return (
-      <>
-        <NavLink to="/enfermero/triaje">Triaje crítico</NavLink>
-        <NavLink to="/enfermero/tratamientos">Seguimiento</NavLink>
-      </>
-    );
-  }
-  if (rol === 'farmaceutico') {
-    return <NavLink to="/farmaceutico/dispensacion">Dispensación</NavLink>;
-  }
-  if (rol === 'director' || rol === 'auditor') {
-    return (
-      <>
-        <NavLink to="/admin/resumen">Resumen</NavLink>
-        <NavLink to="/admin/usuarios">Usuarios</NavLink>
-      </>
-    );
-  }
-  return (
-    <>
-      <NavLink to="/turnos">Mis turnos</NavLink>
-      <NavLink to="/recetas">Recetas y estudios</NavLink>
-      <NavLink to="/historia-clinica">Historia clínica</NavLink>
-      <NavLink to="/documentos">Documentos</NavLink>
-      <NavLink to="/boveda-salud-mental">Bóveda salud mental</NavLink>
-    </>
-  );
-}
+import { SaludYaPortalLogo } from './SaludYaPortalLogo';
 
 export function Layout() {
   const { usuario, logout } = useAuth();
+  const esProfesional = usuario?.rol && usuario.rol !== 'paciente';
 
   return (
-    <div className="layout">
+    <div className="layout patient-portal-layout">
       <header className="topbar">
-        <span className="brand">
-          <StarOfLifeIcon size={22} />
-          <span className="brand-text">SaludYa</span>
-        </span>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <SaludYaPortalLogo portal="pacientes" size={26} />
+        </Link>
+
         <nav>
           <NavLink to="/" end>
             Inicio
           </NavLink>
-          <NavLinksPorRol rol={usuario?.rol} />
+          <NavLink to="/turnos">Mis turnos</NavLink>
+          <NavLink to="/recetas">Recetas y estudios</NavLink>
+          <NavLink to="/historia-clinica">Historia clínica</NavLink>
+          <NavLink to="/documentos">Documentos</NavLink>
+          <NavLink to="/boveda-salud-mental">Bóveda salud mental</NavLink>
           <NavLink to="/perfil">Perfil</NavLink>
         </nav>
+
         <div className="usuario-actual">
+          {esProfesional && (
+            <Link
+              to="/profesionales"
+              style={{
+                background: 'rgba(6, 78, 59, 0.4)',
+                border: '1px solid rgba(167, 243, 208, 0.4)',
+                color: '#ecfdf5',
+                padding: '0.25rem 0.6rem',
+                borderRadius: '6px',
+                fontSize: '0.78rem',
+                textDecoration: 'none',
+                fontWeight: 600,
+              }}
+            >
+              Ir a Portal Profesional →
+            </Link>
+          )}
+
           <NotificationBell />
-          <span>
+          <span style={{ fontSize: '0.85rem' }}>
             {usuario?.nombre} {usuario?.apellido}
           </span>
-          <button onClick={logout}>Salir</button>
+          <button onClick={logout} title="Cerrar sesión de paciente">
+            Salir
+          </button>
         </div>
       </header>
       <main className="content">

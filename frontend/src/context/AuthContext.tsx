@@ -7,8 +7,8 @@ import type { UsuarioResumen } from '../types';
 interface AuthContextValue {
   usuario: UsuarioResumen | null;
   cargando: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (input: authApi.RegisterInput) => Promise<void>;
+  login: (email: string, password: string) => Promise<UsuarioResumen>;
+  register: (input: authApi.RegisterInput) => Promise<UsuarioResumen>;
   logout: () => void;
 }
 
@@ -27,21 +27,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUsuario(usuarioResumen);
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<UsuarioResumen> => {
     setCargando(true);
     try {
       const { accessToken, usuario: usuarioResumen } = await authApi.login(email, password);
       guardarSesion(accessToken, usuarioResumen);
+      return usuarioResumen;
     } finally {
       setCargando(false);
     }
   };
 
-  const register = async (input: authApi.RegisterInput) => {
+  const register = async (input: authApi.RegisterInput): Promise<UsuarioResumen> => {
     setCargando(true);
     try {
       const { accessToken, usuario: usuarioResumen } = await authApi.register(input);
       guardarSesion(accessToken, usuarioResumen);
+      return usuarioResumen;
     } finally {
       setCargando(false);
     }

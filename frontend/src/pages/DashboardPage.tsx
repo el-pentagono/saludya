@@ -1,207 +1,195 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { obtenerResumenAdmin } from '../api/admin';
+import { Link, Navigate } from 'react-router-dom';
 import { listarTurnos } from '../api/appointments';
+import { listarOrdenesEstudio } from '../api/studyOrders';
 import { listarTratamientos } from '../api/treatments';
-import { listarTriaje } from '../api/triage';
 import { useAuth } from '../context/AuthContext';
-import type { AdminResumen, Appointment, Treatment, TriajeCaso } from '../types';
-
-function CardsPorRol({ rol }: { rol: string | undefined }) {
-  if (rol === 'medico') {
-    return (
-      <>
-        <Link className="card" to="/medico/agenda">
-          Mi agenda
-        </Link>
-        <Link className="card" to="/medico/estudios">
-          Órdenes de estudio
-        </Link>
-        <Link className="card" to="/medico/tratamientos">
-          Tratamientos prescritos
-        </Link>
-        <Link className="card" to="/medico/triaje">
-          Triaje crítico
-        </Link>
-      </>
-    );
-  }
-  if (rol === 'enfermero') {
-    return (
-      <>
-        <Link className="card" to="/enfermero/triaje">
-          Triaje crítico
-        </Link>
-        <Link className="card" to="/enfermero/tratamientos">
-          Seguimiento de tratamientos
-        </Link>
-      </>
-    );
-  }
-  if (rol === 'farmaceutico') {
-    return (
-      <Link className="card" to="/farmaceutico/dispensacion">
-        Dispensación de recetas
-      </Link>
-    );
-  }
-  if (rol === 'director' || rol === 'auditor') {
-    return (
-      <>
-        <Link className="card" to="/admin/resumen">
-          Resumen
-        </Link>
-        <Link className="card" to="/admin/usuarios">
-          Usuarios
-        </Link>
-      </>
-    );
-  }
-  return (
-    <>
-      <Link className="card" to="/turnos">
-        Mis turnos
-      </Link>
-      <Link className="card" to="/recetas">
-        Mis recetas y estudios
-      </Link>
-      <Link className="card" to="/historia-clinica">
-        Historia clínica
-      </Link>
-      <Link className="card" to="/documentos">
-        Documentos
-      </Link>
-    </>
-  );
-}
+import type { Appointment, StudyOrder, Treatment } from '../types';
 
 export function DashboardPage() {
   const { usuario } = useAuth();
   const rol = usuario?.rol;
-  const esAdmin = rol === 'director' || rol === 'auditor';
+
+  // Si no es paciente, redirige automáticamente al Portal de Profesionales de Salud
+  if (rol && rol !== 'paciente') {
+    return <Navigate to="/profesionales" replace />;
+  }
+
   const [turnos, setTurnos] = useState<Appointment[]>([]);
-  const [casosTriaje, setCasosTriaje] = useState<TriajeCaso[]>([]);
-  const [tratamientos, setTratamientos] = useState<Treatment[]>([]);
-  const [resumen, setResumen] = useState<AdminResumen | null>(null);
+  const [recetas, setRecetas] = useState<Treatment[]>([]);
+  const [estudios, setEstudios] = useState<StudyOrder[]>([]);
 
   useEffect(() => {
-    if (rol === 'enfermero') {
-      listarTriaje()
-        .then(setCasosTriaje)
-        .catch(() => setCasosTriaje([]));
-    } else if (rol === 'farmaceutico') {
-      listarTratamientos()
-        .then(setTratamientos)
-        .catch(() => setTratamientos([]));
-    } else if (esAdmin) {
-      obtenerResumenAdmin()
-        .then(setResumen)
-        .catch(() => setResumen(null));
-    } else {
-      listarTurnos()
-        .then(setTurnos)
-        .catch(() => setTurnos([]));
-    }
-  }, [rol, esAdmin]);
+    listarTurnos().then(setTurnos).catch(() => setTurnos([]));
+    listarTratamientos().then(setRecetas).catch(() => setRecetas([]));
+    listarOrdenesEstudio().then(setEstudios).catch(() => setEstudios([]));
+  }, []);
 
-  const proximos = turnos
+  const proximosTurnos = turnos
     .filter((t) => t.estado === 'pendiente')
     .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
     .slice(0, 3);
 
-  const casosEnEspera = casosTriaje.filter((c) => c.estado === 'en_espera');
-  const tratamientosPendientes = tratamientos.filter((t) => t.estado === 'prescrito');
-  const totalUsuarios = resumen
-    ? Object.values(resumen.usuariosPorRol).reduce((acc, n) => acc + n, 0)
-    : 0;
+  const recetasPendientes = recetas.filter((r) => r.estado === 'prescrito');
+  const estudiosPendientes = estudios.filter((e) => e.estado === 'pendiente');
 
   return (
     <div>
-      <h1>Hola, {usuario?.nombre}</h1>
+      <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <img
+          src="/logo-pacientes.jpg"
+          alt="SaludYa — Pacientes"
+          style={{
+            width: '84px',
+            height: '56px',
+            objectFit: 'cover',
+            borderRadius: '8px',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            border: '1px solid var(--color-border)',
+          }}
+        />
+        <div>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              color: 'var(--color-primary)',
+              fontWeight: 700,
+            }}
+          >
+            Portal de Pacientes
+          </span>
+          <h1 style={{ margin: '0.15rem 0 0' }}>Hola, {usuario?.nombre}</h1>
+        </div>
+      </div>
 
+      {/* Accesos Rápidos del Paciente */}
       <div className="cards">
-        <CardsPorRol rol={rol} />
+        <Link className="card" to="/turnos">
+          Mis turnos
+        </Link>
+        <Link className="card" to="/recetas">
+          Mis recetas y estudios
+          {recetasPendientes.length > 0 && (
+            <span
+              style={{
+                display: 'block',
+                fontSize: '0.75rem',
+                color: '#0369a1',
+                marginTop: '0.25rem',
+              }}
+            >
+              ● {recetasPendientes.length} para retirar
+            </span>
+          )}
+        </Link>
+        <Link className="card" to="/historia-clinica">
+          Historia clínica
+        </Link>
+        <Link className="card" to="/documentos">
+          Documentos y certificados
+        </Link>
+        <Link className="card" to="/boveda-salud-mental">
+          Bóveda salud mental
+        </Link>
         <Link className="card" to="/perfil">
           Mi perfil
         </Link>
       </div>
 
-      {rol === 'enfermero' && (
-        <>
-          <h2>Casos de triaje en espera</h2>
-          {casosEnEspera.length === 0 ? (
-            <p>No hay casos en espera.</p>
-          ) : (
-            <ul>
-              {casosEnEspera.map((c) => (
-                <li key={c.id}>
-                  {c.paciente ? `${c.paciente.nombre} ${c.paciente.apellido}` : '—'} —{' '}
-                  <span className={`badge badge-${c.prioridad}`}>{c.prioridad}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
+      {/* Alerta de Recetas pendientes de retirar en Farmacia */}
+      {recetasPendientes.length > 0 && (
+        <div
+          style={{
+            background: '#f0fdfa',
+            border: '1px solid #99f6e4',
+            borderRadius: 10,
+            padding: '1rem 1.25rem',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <strong style={{ color: '#0f766e', fontSize: '1rem' }}>
+                Tenés {recetasPendientes.length} receta{recetasPendientes.length > 1 ? 's' : ''} pendiente{recetasPendientes.length > 1 ? 's' : ''} de retirar en farmacia
+              </strong>
+              <div style={{ fontSize: '0.85rem', color: '#115e59', marginTop: '0.2rem' }}>
+                {recetasPendientes.map((r) => `${r.medicamento} (${r.cantidad || '1 unidad'})`).join(' • ')}
+              </div>
+            </div>
+            <Link
+              to="/recetas"
+              style={{
+                background: 'var(--color-primary)',
+                color: '#ffffff',
+                padding: '0.4rem 0.85rem',
+                borderRadius: 6,
+                textDecoration: 'none',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+              }}
+            >
+              Ver instrucciones de retiro →
+            </Link>
+          </div>
+        </div>
       )}
 
-      {rol === 'farmaceutico' && (
-        <>
-          <h2>Tratamientos pendientes de dispensar</h2>
-          {tratamientosPendientes.length === 0 ? (
-            <p>No hay tratamientos pendientes.</p>
-          ) : (
-            <ul>
-              {tratamientosPendientes.map((t) => (
-                <li key={t.id}>
-                  {t.paciente ? `${t.paciente.nombre} ${t.paciente.apellido}` : '—'} —{' '}
-                  {t.medicamento} ({t.dosis})
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
+      {/* Alerta de Estudios Médicos */}
+      {estudiosPendientes.length > 0 && (
+        <div
+          style={{
+            background: '#eff6ff',
+            border: '1px solid #bfdbfe',
+            borderRadius: 10,
+            padding: '1rem 1.25rem',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <strong style={{ color: '#1e40af', fontSize: '1rem' }}>
+                Estudios médicos programados: {estudiosPendientes.length}
+              </strong>
+              <div style={{ fontSize: '0.85rem', color: '#1e3a8a', marginTop: '0.2rem' }}>
+                {estudiosPendientes.map((e) => `${e.tipoEstudio} en ${e.lugar}`).join(' • ')}
+              </div>
+            </div>
+            <Link
+              to="/recetas"
+              style={{
+                background: '#2563eb',
+                color: '#ffffff',
+                padding: '0.4rem 0.85rem',
+                borderRadius: 6,
+                textDecoration: 'none',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+              }}
+            >
+              Ver órdenes →
+            </Link>
+          </div>
+        </div>
       )}
 
-      {esAdmin && (
-        <>
-          <h2>Vista general</h2>
-          {resumen ? (
-            <p>
-              <strong>{totalUsuarios}</strong> usuarios registrados en el sistema.{' '}
-              {resumen.turnosPorEstado.pendiente ? (
-                <>
-                  <strong>{resumen.turnosPorEstado.pendiente}</strong> turnos pendientes.
-                </>
-              ) : (
-                'Sin turnos pendientes.'
-              )}
-            </p>
-          ) : (
-            <p>Cargando…</p>
-          )}
-        </>
-      )}
-
-      {!esAdmin && rol !== 'enfermero' && rol !== 'farmaceutico' && (
-        <>
-          <h2>{rol === 'medico' ? 'Próximos turnos de tu agenda' : 'Próximos turnos'}</h2>
-          {proximos.length === 0 ? (
-            <p>No tenés turnos pendientes.</p>
-          ) : (
-            <ul>
-              {proximos.map((t) => (
-                <li key={t.id}>
-                  <Link to={rol === 'medico' ? '/medico/agenda' : '/turnos'}>
-                    {new Date(t.fecha).toLocaleString('es-AR')}
-                    {rol === 'medico'
-                      ? t.paciente && ` — ${t.paciente.nombre} ${t.paciente.apellido}`
-                      : t.medico && ` — Dr/a. ${t.medico.nombre} ${t.medico.apellido}`}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
+      {/* Próximos turnos */}
+      <h2>Próximos turnos</h2>
+      {proximosTurnos.length === 0 ? (
+        <p style={{ color: 'var(--color-text-muted)' }}>No tenés turnos programados.</p>
+      ) : (
+        <ul>
+          {proximosTurnos.map((t) => (
+            <li key={t.id} style={{ marginBottom: '0.5rem' }}>
+              <Link to="/turnos">
+                <strong>{new Date(t.fecha).toLocaleString('es-AR')}</strong>
+                {t.medico && ` — Dr/a. ${t.medico.nombre} ${t.medico.apellido}`}
+                {t.motivo && ` (${t.motivo})`}
+              </Link>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
