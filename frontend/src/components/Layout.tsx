@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { NotificationBell } from './NotificationBell';
 import { StarOfLifeIcon } from './StarOfLifeIcon';
 
 function NavLinksPorRol({ rol }: { rol: string | undefined }) {
@@ -7,8 +8,9 @@ function NavLinksPorRol({ rol }: { rol: string | undefined }) {
     return (
       <>
         <NavLink to="/medico/agenda">Mi agenda</NavLink>
-        <NavLink to="/medico/triaje">Triaje crítico</NavLink>
+        <NavLink to="/medico/estudios">Órdenes de estudio</NavLink>
         <NavLink to="/medico/tratamientos">Tratamientos</NavLink>
+        <NavLink to="/medico/triaje">Triaje crítico</NavLink>
         <NavLink to="/medico/boveda-salud-mental">Bóveda salud mental</NavLink>
       </>
     );
@@ -35,6 +37,7 @@ function NavLinksPorRol({ rol }: { rol: string | undefined }) {
   return (
     <>
       <NavLink to="/turnos">Mis turnos</NavLink>
+      <NavLink to="/recetas">Recetas y estudios</NavLink>
       <NavLink to="/historia-clinica">Historia clínica</NavLink>
       <NavLink to="/documentos">Documentos</NavLink>
       <NavLink to="/boveda-salud-mental">Bóveda salud mental</NavLink>
@@ -60,6 +63,7 @@ export function Layout() {
           <NavLink to="/perfil">Perfil</NavLink>
         </nav>
         <div className="usuario-actual">
+          <NotificationBell />
           <span>
             {usuario?.nombre} {usuario?.apellido}
           </span>

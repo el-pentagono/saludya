@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EstadoTratamiento } from '../../common/enums/estado-tratamiento.enum';
 import { Rol } from '../../common/enums/rol.enum';
+import { NotificationsService } from '../notifications/notifications.service';
 import { Usuario } from '../usuarios/entities/usuario.entity';
 import { UsuariosService } from '../usuarios/usuarios.service';
 import { CreateFollowUpDto } from './dto/create-follow-up.dto';
@@ -18,6 +19,7 @@ export class TreatmentsService {
     @InjectRepository(TreatmentFollowUp)
     private readonly seguimientosRepo: Repository<TreatmentFollowUp>,
     private readonly usuariosService: UsuariosService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async prescribir(medico: Usuario, dto: CreateTreatmentDto) {
@@ -29,11 +31,32 @@ export class TreatmentsService {
     const tratamiento = this.repo.create({
       pacienteId: paciente.id,
       medicoId: medico.id,
+      appointmentId: dto.appointmentId ?? null,
       medicamento: dto.medicamento,
       dosis: dto.dosis,
+      cantidad: dto.cantidad ?? '1 unidad',
+      esGratuita: dto.esGratuita ?? true,
       indicaciones: dto.indicaciones,
     });
-    return this.repo.save(tratamiento);
+    const guardado = await this.repo.save(tratamiento);
+
+    // Disparo automático de notificación al paciente (punto 5 del circuito)
+    const nombreMedico = medico.nombre ? `Dr/a. ${medico.nombre} ${medico.apellido ?? ''}`.trim() : 'El médico';
+    const tagGratuita = guardado.esGratuita ? ' [Gratuita / Hospital]' : '';
+    await this.notificationsService.crear(
+      paciente.id,
+      'Nueva receta digital emitida',
+      `${nombreMedico} te prescribió ${guardado.medicamento} (${guardado.dosis}, ${guardado.cantidad})${tagGratuita}. Ya podés pasar a retirarla por Farmacia.`,
+      'receta_emitida',
+      {
+        treatmentId: guardado.id,
+        medicamento: guardado.medicamento,
+        cantidad: guardado.cantidad,
+        esGratuita: guardado.esGratuita,
+      },
+    );
+
+    return guardado;
   }
 
   async listar(usuario: Usuario) {
@@ -82,7 +105,22 @@ export class TreatmentsService {
     tratamiento.estado = EstadoTratamiento.DISPENSADO;
     tratamiento.farmaceuticoId = farmaceutico.id;
     tratamiento.fechaDispensa = new Date();
-    return this.repo.save(tratamiento);
+    const guardado = await this.repo.save(tratamiento);
+
+    // Disparo automático de notificación al paciente (punto 7 del circuito)
+    await this.notificationsService.crear(
+      tratamiento.pacienteId,
+      'Receta entregada en farmacia',
+      `Tu receta de ${tratamiento.medicamento} (${tratamiento.dosis}, ${tratamiento.cantidad}) fue entregada exitosamente en farmacia.`,
+      'receta_entregada',
+      {
+        treatmentId: guardado.id,
+        medicamento: guardado.medicamento,
+        fechaDispensa: guardado.fechaDispensa,
+      },
+    );
+
+    return guardado;
   }
 
   async agregarSeguimiento(enfermero: Usuario, treatmentId: string, dto: CreateFollowUpDto) {

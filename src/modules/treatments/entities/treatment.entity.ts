@@ -28,6 +28,12 @@ export class Treatment {
 
   @Column() dosis: string;
 
+  @Column({ default: '1 unidad' }) cantidad: string;
+
+  @Column({ default: true }) esGratuita: boolean;
+
+  @Column({ nullable: true }) appointmentId: string;
+
   @Column({ nullable: true }) indicaciones: string;
 
   @Column({ type: 'enum', enum: EstadoTratamiento, default: EstadoTratamiento.PRESCRITO })

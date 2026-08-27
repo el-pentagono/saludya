@@ -14,11 +14,14 @@ function CardsPorRol({ rol }: { rol: string | undefined }) {
         <Link className="card" to="/medico/agenda">
           Mi agenda
         </Link>
-        <Link className="card" to="/medico/triaje">
-          Triaje crítico
+        <Link className="card" to="/medico/estudios">
+          Órdenes de estudio
         </Link>
         <Link className="card" to="/medico/tratamientos">
           Tratamientos prescritos
+        </Link>
+        <Link className="card" to="/medico/triaje">
+          Triaje crítico
         </Link>
       </>
     );
@@ -38,7 +41,7 @@ function CardsPorRol({ rol }: { rol: string | undefined }) {
   if (rol === 'farmaceutico') {
     return (
       <Link className="card" to="/farmaceutico/dispensacion">
-        Dispensación
+        Dispensación de recetas
       </Link>
     );
   }
@@ -58,6 +61,9 @@ function CardsPorRol({ rol }: { rol: string | undefined }) {
     <>
       <Link className="card" to="/turnos">
         Mis turnos
+      </Link>
+      <Link className="card" to="/recetas">
+        Mis recetas y estudios
       </Link>
       <Link className="card" to="/historia-clinica">
         Historia clínica

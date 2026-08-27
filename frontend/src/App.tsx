@@ -22,6 +22,7 @@ import { TriagePage } from './pages/enfermero/TriagePage';
 import { DispensingPage } from './pages/farmaceutico/DispensingPage';
 import { LoginPage } from './pages/LoginPage';
 import { MedicalRecordsPage } from './pages/MedicalRecordsPage';
+import { PrescriptionsPage } from './pages/PrescriptionsPage';
 import { AgendaPage } from './pages/medico/AgendaPage';
 import { AmbientAiPage } from './pages/medico/AmbientAiPage';
 import { BovedaCreatePage } from './pages/medico/BovedaCreatePage';
@@ -29,6 +30,7 @@ import { BovedaListPage } from './pages/medico/BovedaListPage';
 import { MedicoTriagePage } from './pages/medico/MedicoTriagePage';
 import { PatientRecordPage } from './pages/medico/PatientRecordPage';
 import { PrescribePage } from './pages/medico/PrescribePage';
+import { StudyOrdersPage } from './pages/medico/StudyOrdersPage';
 import { TreatmentsPage } from './pages/medico/TreatmentsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -47,6 +49,7 @@ export default function App() {
 
               <Route element={<RequireRole roles={['paciente']} />}>
                 <Route path="/turnos" element={<AppointmentsPage />} />
+                <Route path="/recetas" element={<PrescriptionsPage />} />
                 <Route path="/historia-clinica" element={<MedicalRecordsPage />} />
                 <Route path="/documentos" element={<DocumentsPage />} />
                 <Route path="/boveda-salud-mental" element={<BovedaSaludMentalPage />} />
@@ -54,6 +57,7 @@ export default function App() {
 
               <Route element={<RequireRole roles={['medico']} />}>
                 <Route path="/medico/agenda" element={<AgendaPage />} />
+                <Route path="/medico/estudios" element={<StudyOrdersPage />} />
                 <Route path="/medico/triaje" element={<MedicoTriagePage />} />
                 <Route path="/medico/tratamientos" element={<TreatmentsPage />} />
                 <Route path="/medico/boveda-salud-mental" element={<BovedaListPage />} />

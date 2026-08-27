@@ -85,10 +85,16 @@ export interface Treatment {
   paciente?: PersonaResumen;
   medicoId: string;
   medico?: PersonaResumen;
+  appointmentId?: string;
   medicamento: string;
   dosis: string;
+  cantidad: string;
+  esGratuita: boolean;
   indicaciones?: string;
   estado: EstadoTratamiento;
+  farmaceuticoId?: string;
+  farmaceutico?: PersonaResumen;
+  fechaDispensa?: string;
   fechaCreacion: string;
 }
 
@@ -157,4 +163,35 @@ export interface TranscripcionConsulta {
   medicalRecordId?: string;
   fechaCreacion: string;
   fechaConfirmacion?: string;
+}
+
+export interface Notification {
+  id: string;
+  usuarioId: string;
+  titulo: string;
+  mensaje: string;
+  tipo: string;
+  metadata?: Record<string, any>;
+  leida: boolean;
+  fechaCreacion: string;
+}
+
+export type EstadoOrdenEstudio = 'pendiente' | 'realizado' | 'cancelado';
+
+export interface StudyOrder {
+  id: string;
+  pacienteId: string;
+  paciente?: PersonaResumen;
+  medicoId: string;
+  medico?: PersonaResumen;
+  appointmentId?: string;
+  appointment?: Appointment;
+  tipoEstudio: string;
+  lugar: string;
+  fechaSugerida: string;
+  indicaciones?: string;
+  estado: EstadoOrdenEstudio;
+  fechaRealizado?: string;
+  fechaControlSugerida?: string;
+  fechaCreacion: string;
 }

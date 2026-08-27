@@ -16,6 +16,20 @@ export class CreateTreatmentDto {
   @Length(1, 200, { message: 'La dosis debe tener entre 1 y 200 caracteres' })
   dosis: string;
 
+  @ApiProperty({ required: false, description: 'Cantidad o unidades prescritas (ej: 30 comprimidos)' })
+  @IsOptional()
+  @IsString({ message: 'La cantidad debe ser un texto' })
+  cantidad?: string;
+
+  @ApiProperty({ required: false, description: 'Indica si es gratuita/hospitalaria', default: true })
+  @IsOptional()
+  esGratuita?: boolean;
+
+  @ApiProperty({ required: false, description: 'ID del turno durante el cual se emite la receta' })
+  @IsOptional()
+  @IsUUID(undefined, { message: 'El turno indicado no es válido' })
+  appointmentId?: string;
+
   @ApiProperty({ required: false, description: 'Indicaciones adicionales' })
   @IsOptional()
   @IsString({ message: 'Las indicaciones deben ser un texto' })

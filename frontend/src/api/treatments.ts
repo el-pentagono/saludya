@@ -5,6 +5,9 @@ export interface PrescribirTratamientoInput {
   pacienteId: string;
   medicamento: string;
   dosis: string;
+  cantidad?: string;
+  esGratuita?: boolean;
+  appointmentId?: string;
   indicaciones?: string;
 }
 

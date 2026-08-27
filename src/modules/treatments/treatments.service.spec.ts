@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EstadoTratamiento } from '../../common/enums/estado-tratamiento.enum';
 import { Rol } from '../../common/enums/rol.enum';
+import { NotificationsService } from '../notifications/notifications.service';
 import { Usuario } from '../usuarios/entities/usuario.entity';
 import { UsuariosService } from '../usuarios/usuarios.service';
 import { TreatmentFollowUp } from './entities/treatment-follow-up.entity';
@@ -22,6 +23,7 @@ describe('TreatmentsService', () => {
   let repo: { create: jest.Mock; save: jest.Mock; find: jest.Mock; findOne: jest.Mock };
   let seguimientosRepo: { create: jest.Mock; save: jest.Mock; find: jest.Mock };
   let usuariosService: { findOne: jest.Mock };
+  let notificationsService: { crear: jest.Mock };
 
   beforeEach(async () => {
     repo = {
@@ -36,6 +38,7 @@ describe('TreatmentsService', () => {
       find: jest.fn(),
     };
     usuariosService = { findOne: jest.fn() };
+    notificationsService = { crear: jest.fn().mockResolvedValue({}) };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -43,6 +46,7 @@ describe('TreatmentsService', () => {
         { provide: getRepositoryToken(Treatment), useValue: repo },
         { provide: getRepositoryToken(TreatmentFollowUp), useValue: seguimientosRepo },
         { provide: UsuariosService, useValue: usuariosService },
+        { provide: NotificationsService, useValue: notificationsService },
       ],
     }).compile();
 
