@@ -15,9 +15,9 @@
 - **Tamaño**: ~4.7 MB
 - **Esquema de firma**: V1, V2 y V3 habilitados con certificado RSA 2048 bits válido hasta Enero de 2054.
 - **Huella SHA-256 del Keystore**:
-  `CF:2A:81:E8:EF:16:55:F7:42:89:41:81:01:AC:48:FF:A0:BF:4F:DA:DB:18:E1:91:F6:AC:62:CB:BB:7D:D4:FD`
+  `4B:57:CD:8A:27:F4:63:2A:22:2D:53:1E:9B:A4:90:6A:08:D3:69:70:97:EB:AC:6A:F3:6F:2C:DD:E0:B6:99:D5`
 - **Huella SHA-1 del Keystore**:
-  `27:05:36:67:7F:DD:49:FD:E1:5D:AC:35:7E:C0:CC:9B:C2:CD:E6:D5`
+  `16:21:DE:5E:E6:BA:95:99:6D:52:32:EA:6A:F0:57:83:FA:53:D9:22`
 
 ---
 
