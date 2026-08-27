@@ -56,6 +56,10 @@ function NavLinksProfesionales({ rol }: { rol: string | undefined }) {
           <NavLink to="/admin/usuarios">Usuarios</NavLink>
           <NavLink to="/admin/turnos">Turnos</NavLink>
           <NavLink to="/admin/tratamientos">Tratamientos</NavLink>
+          <NavLink to="/admin/documentos">Documentos</NavLink>
+          <NavLink to="/admin/triaje">Triaje</NavLink>
+          <NavLink to="/admin/historia-clinica">Historia clínica</NavLink>
+          <NavLink to="/admin/ambient-ai">Ambient AI</NavLink>
         </>
       )}
 

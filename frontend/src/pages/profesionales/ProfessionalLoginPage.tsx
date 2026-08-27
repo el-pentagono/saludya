@@ -128,6 +128,109 @@ export function ProfessionalLoginPage() {
           {enviando ? 'Verificando credenciales…' : 'Ingresar al Portal Profesional'}
         </button>
 
+        {/* Acceso Rápido DEMO Comercial */}
+        <div
+          style={{
+            marginTop: '1.25rem',
+            padding: '0.75rem',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px dashed #34d399',
+            borderRadius: '8px',
+            textAlign: 'center',
+          }}
+        >
+          <div
+            style={{
+              fontSize: '0.75rem',
+              color: '#a7f3d0',
+              fontWeight: 700,
+              marginBottom: '0.5rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+            }}
+          >
+            Acceso Rápido — Demo Comercial
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('demo.medico@saludya.com.ar');
+                setPassword('SaludYaDemo2026!');
+              }}
+              style={{
+                background: '#047857',
+                color: '#ffffff',
+                padding: '0.4rem 0.5rem',
+                fontSize: '0.75rem',
+                borderRadius: '6px',
+                border: '1px solid #10b981',
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+            >
+              Dr. Navarro (Médico)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('demo.enfermero@saludya.com.ar');
+                setPassword('SaludYaDemo2026!');
+              }}
+              style={{
+                background: '#047857',
+                color: '#ffffff',
+                padding: '0.4rem 0.5rem',
+                fontSize: '0.75rem',
+                borderRadius: '6px',
+                border: '1px solid #10b981',
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+            >
+              Lic. Pérez (Enfermera)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('demo.farmaceutico@saludya.com.ar');
+                setPassword('SaludYaDemo2026!');
+              }}
+              style={{
+                background: '#047857',
+                color: '#ffffff',
+                padding: '0.4rem 0.5rem',
+                fontSize: '0.75rem',
+                borderRadius: '6px',
+                border: '1px solid #10b981',
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+            >
+              Farm. Delgado (Farmacia)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('demo.director@saludya.com.ar');
+                setPassword('SaludYaDemo2026!');
+              }}
+              style={{
+                background: '#047857',
+                color: '#ffffff',
+                padding: '0.4rem 0.5rem',
+                fontSize: '0.75rem',
+                borderRadius: '6px',
+                border: '1px solid #10b981',
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+            >
+              Dra. Roldán (Directora)
+            </button>
+          </div>
+        </div>
+
         <div
           style={{
             marginTop: '1.5rem',

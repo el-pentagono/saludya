@@ -29,6 +29,7 @@ import { TriajeCriticoModule } from './modules/triaje-critico/triaje-critico.mod
 import { BovedaSaludMentalModule } from './modules/boveda-salud-mental/boveda-salud-mental.module';
 import { AmbientAiModule } from './modules/ambient-ai/ambient-ai.module';
 import { CierreExpressModule } from './modules/cierre-express/cierre-express.module';
+import { DemoSeedModule } from './modules/demo-seed/demo-seed.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { StudyOrdersModule } from './modules/study-orders/study-orders.module';
 
@@ -50,7 +51,7 @@ import { StudyOrdersModule } from './modules/study-orders/study-orders.module';
         autoLoadEntities: true,
       }),
     }),
-    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule, AmbientAiModule, CierreExpressModule, NotificationsModule, StudyOrdersModule,
+    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule, AmbientAiModule, CierreExpressModule, NotificationsModule, StudyOrdersModule, DemoSeedModule,
   ],
 })
 export class AppModule {}

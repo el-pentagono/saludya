@@ -93,6 +93,41 @@ export function LoginPage() {
           {enviando ? 'Ingresando…' : 'Ingresar al Portal Pacientes'}
         </button>
 
+        {/* Acceso Rápido DEMO Comercial */}
+        <div
+          style={{
+            marginTop: '1rem',
+            padding: '0.65rem 0.85rem',
+            background: '#e0f2fe',
+            border: '1px dashed #38bdf8',
+            borderRadius: '8px',
+            textAlign: 'center',
+          }}
+        >
+          <div style={{ fontSize: '0.75rem', color: '#0369a1', fontWeight: 700, marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+            Acceso Rápido — Demo Comercial
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setEmail('demo.paciente@saludya.com.ar');
+              setPassword('SaludYaDemo2026!');
+            }}
+            style={{
+              background: '#0284c7',
+              color: '#ffffff',
+              padding: '0.35rem 0.75rem',
+              fontSize: '0.8rem',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 600,
+            }}
+          >
+            Cargar Paciente Demo (Lucas Benítez)
+          </button>
+        </div>
+
         <p style={{ textAlign: 'center', marginTop: '1rem', marginBottom: '1.25rem' }}>
           ¿No tenés cuenta? <Link to="/registro">Registrate</Link>
         </p>

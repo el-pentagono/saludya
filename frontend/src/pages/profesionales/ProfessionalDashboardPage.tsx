@@ -194,7 +194,7 @@ export function ProfessionalDashboardPage() {
               Triaje crítico ({casosEnEspera.length} en espera)
             </Link>
             <Link className="card" to="/enfermero/tratamientos">
-              Seguimiento de tratamientos
+              Seguimiento de tratamientos ({tratamientos.length} registrados)
             </Link>
           </div>
 
@@ -211,17 +211,51 @@ export function ProfessionalDashboardPage() {
               ))}
             </ul>
           )}
+
+          <h2>Tratamientos en seguimiento reciente</h2>
+          {tratamientos.length === 0 ? (
+            <p style={{ color: 'var(--color-text-muted)' }}>No hay tratamientos registrados.</p>
+          ) : (
+            <ul>
+              {tratamientos.slice(0, 5).map((t) => (
+                <li key={t.id} style={{ marginBottom: '0.4rem' }}>
+                  <Link to={`/enfermero/tratamientos/${t.id}`}>
+                    <strong>{t.medicamento} ({t.dosis})</strong>
+                    {t.paciente && ` — ${t.paciente.nombre} ${t.paciente.apellido}`}
+                    {' '}
+                    <span className={`badge badge-${t.estado}`}>{t.estado}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </>
       )}
 
       {(rol === 'director' || rol === 'auditor') && (
         <>
+          <div
+            style={{
+              background: '#f8fafc',
+              border: '1px solid #cbd5e1',
+              borderRadius: 8,
+              padding: '0.85rem 1.25rem',
+              marginBottom: '1.5rem',
+              color: '#334155',
+              fontSize: '0.9rem',
+            }}
+          >
+            <strong>Módulo de Supervisión y Auditoría:</strong> Acceso de solo lectura sobre todo el
+            sistema. Diseñado para monitoreo institucional, trazabilidad clínica y control de
+            procesos sin intervención ni modificación de datos de atención directa.
+          </div>
+
           <div className="cards">
             <Link className="card" to="/admin/resumen">
               Resumen institucional
             </Link>
             <Link className="card" to="/admin/usuarios">
-              Gestión de usuarios
+              Usuarios del sistema
             </Link>
             <Link className="card" to="/admin/turnos">
               Control de turnos
@@ -229,13 +263,50 @@ export function ProfessionalDashboardPage() {
             <Link className="card" to="/admin/tratamientos">
               Auditoría de tratamientos
             </Link>
+            <Link className="card" to="/admin/documentos">
+              Documentos emitidos
+            </Link>
+            <Link className="card" to="/admin/triaje">
+              Triaje crítico
+            </Link>
+            <Link className="card" to="/admin/historia-clinica">
+              Historia clínica general
+            </Link>
+            <Link className="card" to="/admin/ambient-ai">
+              Ambient AI (Transcripciones)
+            </Link>
           </div>
 
           {resumen && (
-            <p>
-              Hay <strong>{Object.values(resumen.usuariosPorRol).reduce((a, b) => a + b, 0)}</strong> usuarios
-              registrados en la plataforma.
-            </p>
+            <div
+              style={{
+                marginTop: '1.5rem',
+                background: '#ffffff',
+                border: '1px solid var(--color-border)',
+                borderRadius: 8,
+                padding: '1.25rem',
+              }}
+            >
+              <h3 style={{ marginTop: 0 }}>Panorama General del Hospital</h3>
+              <p style={{ margin: '0.25rem 0' }}>
+                Total de usuarios registrados:{' '}
+                <strong>{Object.values(resumen.usuariosPorRol).reduce((a, b) => a + b, 0)}</strong>{' '}
+                (Pacientes: {resumen.usuariosPorRol.paciente || 0}, Médicos:{' '}
+                {resumen.usuariosPorRol.medico || 0}, Enfermeros:{' '}
+                {resumen.usuariosPorRol.enfermero || 0}, Farmacéuticos:{' '}
+                {resumen.usuariosPorRol.farmaceutico || 0})
+              </p>
+              <p style={{ margin: '0.25rem 0' }}>
+                Turnos:{' '}
+                <strong>{resumen.turnosPorEstado.pendiente || 0}</strong> pendientes,{' '}
+                <strong>{resumen.turnosPorEstado.atendido || 0}</strong> atendidos.
+              </p>
+              <p style={{ margin: '0.25rem 0' }}>
+                Tratamientos:{' '}
+                <strong>{resumen.tratamientosPorEstado.prescrito || 0}</strong> prescritos,{' '}
+                <strong>{resumen.tratamientosPorEstado.dispensado || 0}</strong> dispensados.
+              </p>
+            </div>
           )}
         </>
       )}

@@ -29,3 +29,6 @@ export const agregarSeguimiento = (treatmentId: string, nota: string) =>
 
 export const dispensarTratamiento = (id: string) =>
   apiClient.patch<Treatment>(`/api/treatments/${id}/dispensar`).then((r) => r.data);
+
+export const obtenerTratamientoPorId = (id: string) =>
+  apiClient.get<Treatment>(`/api/treatments/${id}`).then((r) => r.data);

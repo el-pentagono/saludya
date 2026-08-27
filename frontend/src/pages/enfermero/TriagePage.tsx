@@ -141,6 +141,7 @@ export function TriagePage() {
             <th>Paciente</th>
             <th>Prioridad</th>
             <th>Estado</th>
+            <th>Médico asignado</th>
             <th>Observaciones</th>
             <th></th>
           </tr>
@@ -155,6 +156,11 @@ export function TriagePage() {
               <td>
                 <span className={`badge badge-${c.estado}`}>{c.estado}</span>
               </td>
+              <td>
+                {c.medicoAsignado
+                  ? `Dr/a. ${c.medicoAsignado.nombre} ${c.medicoAsignado.apellido}`
+                  : <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Sin asignar</span>}
+              </td>
               <td>{c.observaciones}</td>
               <td>
                 {c.estado === 'en_espera' && (
@@ -165,7 +171,7 @@ export function TriagePage() {
           ))}
           {casos.length === 0 && (
             <tr>
-              <td colSpan={5}>No hay casos de triaje cargados.</td>
+              <td colSpan={6}>No hay casos de triaje cargados.</td>
             </tr>
           )}
         </tbody>
