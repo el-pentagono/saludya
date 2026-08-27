@@ -220,3 +220,32 @@ export interface ResultadoDisponibilidadCruzada {
   mensaje: string | null;
 }
 
+export interface ConsentimientoMenor {
+  id: string;
+  tutorId: string;
+  versionPolitica: string;
+  textoAceptado: string;
+  fechaAceptacion: string;
+}
+
+export interface MenorACargo {
+  id: string;
+  tutorId: string;
+  nombre: string;
+  apellido: string;
+  dni: string;
+  fechaNacimiento: string;
+  relacion: string;
+  grupoSanguineo?: string | null;
+  alergias?: string | null;
+  antecedentes?: string | null;
+  pediatraCabecera?: string | null;
+  documentoRespaldoUrl?: string | null;
+  documentoRespaldoNombre?: string | null;
+  documentoRespaldoTipo?: string | null;
+  estadoVerificacion: string;
+  fechaCreacion: string;
+  fechaActualizacion: string;
+}
+
+

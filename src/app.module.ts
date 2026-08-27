@@ -32,6 +32,9 @@ import { CierreExpressModule } from './modules/cierre-express/cierre-express.mod
 import { DemoSeedModule } from './modules/demo-seed/demo-seed.module';
 import { DisponibilidadModule } from './modules/disponibilidad/disponibilidad.module';
 import { BloqueDisponibilidad } from './modules/disponibilidad/entities/bloque-disponibilidad.entity';
+import { ConsentimientoMenor } from './modules/familia/entities/consentimiento-menor.entity';
+import { MenorACargo } from './modules/familia/entities/menor-a-cargo.entity';
+import { FamiliaModule } from './modules/familia/familia.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { StudyOrdersModule } from './modules/study-orders/study-orders.module';
 
@@ -47,13 +50,13 @@ import { StudyOrdersModule } from './modules/study-orders/study-orders.module';
         username: config.get('database.username'),
         password: config.get('database.password'),
         database: config.get('database.database'),
-        entities: [Usuario, ObraSocial, Appointment, MedicalRecord, Treatment, TreatmentFollowUp, Document, TriajeCritico, RegistroSaludMental, TranscripcionConsulta, Notification, StudyOrder, BloqueDisponibilidad],
+        entities: [Usuario, ObraSocial, Appointment, MedicalRecord, Treatment, TreatmentFollowUp, Document, TriajeCritico, RegistroSaludMental, TranscripcionConsulta, Notification, StudyOrder, BloqueDisponibilidad, ConsentimientoMenor, MenorACargo],
         synchronize: config.get<boolean>('database.synchronize'),
         logging: config.get<boolean>('database.logging'),
         autoLoadEntities: true,
       }),
     }),
-    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule, AmbientAiModule, CierreExpressModule, NotificationsModule, StudyOrdersModule, DemoSeedModule, DisponibilidadModule,
+    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule, AmbientAiModule, CierreExpressModule, NotificationsModule, StudyOrdersModule, DemoSeedModule, DisponibilidadModule, FamiliaModule,
   ],
 })
 export class AppModule {}

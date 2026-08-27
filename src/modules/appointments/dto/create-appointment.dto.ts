@@ -18,6 +18,14 @@ export class CreateAppointmentDto {
   @IsUUID(undefined, { message: 'El paciente indicado no es válido' })
   pacienteId?: string;
 
+  @ApiProperty({
+    description: 'ID del menor a cargo si el turno es para un hijo/a',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID(undefined, { message: 'El menor indicado no es válido' })
+  menorId?: string;
+
   @ApiProperty({ description: 'Fecha y hora del turno (ISO 8601)' })
   @IsDateString({}, { message: 'La fecha debe ser una fecha válida' })
   fecha: string;

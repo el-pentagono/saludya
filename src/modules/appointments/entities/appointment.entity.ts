@@ -28,6 +28,8 @@ export class Appointment {
 
   @Column({ type: 'timestamp' }) fecha: Date;
 
+  @Column({ nullable: true }) menorId: string;
+
   @Column({ nullable: true }) motivo: string;
 
   @Column({ type: 'enum', enum: EstadoTurno, default: EstadoTurno.PENDIENTE })

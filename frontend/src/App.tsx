@@ -18,6 +18,8 @@ import { AvailabilityPage } from './pages/AvailabilityPage';
 import { BovedaSaludMentalPage } from './pages/BovedaSaludMentalPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { DocumentsPage } from './pages/DocumentsPage';
+import { FamilyPage } from './pages/FamilyPage';
+import { MinorDetailPage } from './pages/MinorDetailPage';
 import { TreatmentFollowUpDetailPage } from './pages/enfermero/TreatmentFollowUpDetailPage';
 import { TreatmentFollowUpsPage } from './pages/enfermero/TreatmentFollowUpsPage';
 import { TriagePage } from './pages/enfermero/TriagePage';
@@ -60,6 +62,8 @@ export default function App() {
               <Route element={<RequireRole roles={['paciente']} />}>
                 <Route path="/turnos" element={<AppointmentsPage />} />
                 <Route path="/mi-disponibilidad" element={<AvailabilityPage />} />
+                <Route path="/mi-familia" element={<FamilyPage />} />
+                <Route path="/mi-familia/:menorId" element={<MinorDetailPage />} />
                 <Route path="/recetas" element={<PrescriptionsPage />} />
                 <Route path="/historia-clinica" element={<MedicalRecordsPage />} />
                 <Route path="/documentos" element={<DocumentsPage />} />

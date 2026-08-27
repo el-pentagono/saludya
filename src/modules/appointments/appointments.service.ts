@@ -79,6 +79,7 @@ export class AppointmentsService {
     const turno = this.repo.create({
       pacienteId,
       medicoId,
+      menorId: dto.menorId,
       fecha,
       motivo: dto.motivo,
     });

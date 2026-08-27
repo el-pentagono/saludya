@@ -11,6 +11,8 @@ import { Rol } from '../../common/enums/rol.enum';
 import { TranscripcionConsulta } from '../ambient-ai/entities/transcripcion-consulta.entity';
 import { Appointment } from '../appointments/entities/appointment.entity';
 import { BloqueDisponibilidad } from '../disponibilidad/entities/bloque-disponibilidad.entity';
+import { ConsentimientoMenor } from '../familia/entities/consentimiento-menor.entity';
+import { MenorACargo } from '../familia/entities/menor-a-cargo.entity';
 import { MedicalRecord } from '../medical-records/entities/medical-record.entity';
 import { Notification } from '../notifications/entities/notification.entity';
 import { StudyOrder } from '../study-orders/entities/study-order.entity';
@@ -84,6 +86,10 @@ export class DemoSeedService implements OnModuleInit {
     private readonly ambientRepo: Repository<TranscripcionConsulta>,
     @InjectRepository(BloqueDisponibilidad)
     private readonly availabilityRepo: Repository<BloqueDisponibilidad>,
+    @InjectRepository(ConsentimientoMenor)
+    private readonly consentimientoRepo: Repository<ConsentimientoMenor>,
+    @InjectRepository(MenorACargo)
+    private readonly menoresRepo: Repository<MenorACargo>,
   ) {}
 
   async onModuleInit() {
@@ -381,6 +387,49 @@ export class DemoSeedService implements OnModuleInit {
         }),
       ]);
       this.logger.log('Bloques de disponibilidad personal demo sembrados');
+    }
+
+    // 10. Consentimiento y Perfil de Menor a Cargo (Gestión Familiar)
+    let consentimientoDemo = await this.consentimientoRepo.findOne({
+      where: { tutorId: paciente.id },
+    });
+    if (!consentimientoDemo) {
+      consentimientoDemo = await this.consentimientoRepo.save(
+        this.consentimientoRepo.create({
+          tutorId: paciente.id,
+          versionPolitica: '1.0',
+          textoAceptado:
+            'Acepto expresamente que SaludYa almacene y procese los datos de salud de los menores a mi cargo conforme a la Ley de Protección de Datos Personales y políticas de Google Play Store para el cuidado pediátrico.',
+          ipAddress: '127.0.0.1',
+        }),
+      );
+      this.logger.log('Consentimiento informado de menores demo sembrado');
+    }
+
+    const menorExistente = await this.menoresRepo.findOne({
+      where: { tutorId: paciente.id, nombre: 'Sofía' },
+    });
+    if (!menorExistente) {
+      await this.menoresRepo.save(
+        this.menoresRepo.create({
+          tutorId: paciente.id,
+          nombre: 'Sofía',
+          apellido: 'Benítez',
+          dni: '54123987',
+          fechaNacimiento: '2019-05-14',
+          relacion: 'padre',
+          grupoSanguineo: '0+',
+          alergias: 'Ninguna alergia conocida. Vacunas de ingreso escolar completas.',
+          antecedentes: 'Broncoespasmo leve a los 3 años (resuelto). Controles anuales normales.',
+          pediatraCabecera: 'Dra. Laura Rossi (Hospital Materno Infantil de Tigre)',
+          documentoRespaldoUrl:
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+          documentoRespaldoNombre: 'dni-sofia-benitez.jpg',
+          documentoRespaldoTipo: 'dni',
+          estadoVerificacion: 'documentado',
+        }),
+      );
+      this.logger.log('Perfil de menor demo (Sofía Benítez) sembrado');
     }
   }
 }

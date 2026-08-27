@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TranscripcionConsulta } from '../ambient-ai/entities/transcripcion-consulta.entity';
 import { Appointment } from '../appointments/entities/appointment.entity';
 import { BloqueDisponibilidad } from '../disponibilidad/entities/bloque-disponibilidad.entity';
+import { ConsentimientoMenor } from '../familia/entities/consentimiento-menor.entity';
+import { MenorACargo } from '../familia/entities/menor-a-cargo.entity';
 import { MedicalRecord } from '../medical-records/entities/medical-record.entity';
 import { Notification } from '../notifications/entities/notification.entity';
 import { StudyOrder } from '../study-orders/entities/study-order.entity';
@@ -25,6 +27,8 @@ import { DemoSeedService } from './demo-seed.service';
       Notification,
       TranscripcionConsulta,
       BloqueDisponibilidad,
+      ConsentimientoMenor,
+      MenorACargo,
     ]),
   ],
   providers: [DemoSeedService],
