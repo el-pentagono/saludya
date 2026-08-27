@@ -15,8 +15,18 @@ describe('AppointmentsController — guards y roles por endpoint', () => {
     expect(guards).toContain(RolesGuard);
   });
 
-  it('crear: solo PACIENTE', () => {
-    expect(obtenerRolesDeMetodo(AppointmentsController.prototype.crear)).toEqual([Rol.PACIENTE]);
+  it('crear: PACIENTE y MEDICO', () => {
+    expect(obtenerRolesDeMetodo(AppointmentsController.prototype.crear)).toEqual([
+      Rol.PACIENTE,
+      Rol.MEDICO,
+    ]);
+  });
+
+  it('disponibilidadCruzada: MEDICO y PACIENTE', () => {
+    expect(obtenerRolesDeMetodo(AppointmentsController.prototype.disponibilidadCruzada)).toEqual([
+      Rol.MEDICO,
+      Rol.PACIENTE,
+    ]);
   });
 
   it('listar, buscarPorId, cancelar: sin restricción de rol (chequeo de pertenencia en el service)', () => {

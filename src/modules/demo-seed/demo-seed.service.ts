@@ -10,6 +10,7 @@ import { PrioridadTriaje } from '../../common/enums/prioridad-triaje.enum';
 import { Rol } from '../../common/enums/rol.enum';
 import { TranscripcionConsulta } from '../ambient-ai/entities/transcripcion-consulta.entity';
 import { Appointment } from '../appointments/entities/appointment.entity';
+import { BloqueDisponibilidad } from '../disponibilidad/entities/bloque-disponibilidad.entity';
 import { MedicalRecord } from '../medical-records/entities/medical-record.entity';
 import { Notification } from '../notifications/entities/notification.entity';
 import { StudyOrder } from '../study-orders/entities/study-order.entity';
@@ -81,6 +82,8 @@ export class DemoSeedService implements OnModuleInit {
     @InjectRepository(Notification) private readonly notificationsRepo: Repository<Notification>,
     @InjectRepository(TranscripcionConsulta)
     private readonly ambientRepo: Repository<TranscripcionConsulta>,
+    @InjectRepository(BloqueDisponibilidad)
+    private readonly availabilityRepo: Repository<BloqueDisponibilidad>,
   ) {}
 
   async onModuleInit() {
@@ -352,6 +355,32 @@ export class DemoSeedService implements OnModuleInit {
         );
         this.logger.log('Transcripción Ambient AI demo sembrada');
       }
+    }
+
+    // 9. Bloques personales de disponibilidad del paciente demo
+    const bloquesExistentes = await this.availabilityRepo.find({
+      where: { pacienteId: paciente.id },
+    });
+    if (bloquesExistentes.length === 0) {
+      await this.availabilityRepo.save([
+        this.availabilityRepo.create({
+          pacienteId: paciente.id,
+          titulo: 'Trabajo en oficina (Tigre)',
+          esRecurrente: true,
+          diaSemana: 1, // Lunes
+          horaInicio: '08:00',
+          horaFin: '13:00',
+        }),
+        this.availabilityRepo.create({
+          pacienteId: paciente.id,
+          titulo: 'Cuidado familiar y clases',
+          esRecurrente: true,
+          diaSemana: 3, // Miércoles
+          horaInicio: '14:00',
+          horaFin: '18:00',
+        }),
+      ]);
+      this.logger.log('Bloques de disponibilidad personal demo sembrados');
     }
   }
 }

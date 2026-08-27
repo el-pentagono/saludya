@@ -5,6 +5,8 @@ import { EstadoTurno } from '../../common/enums/estado-turno.enum';
 import { Rol } from '../../common/enums/rol.enum';
 import { Usuario } from '../usuarios/entities/usuario.entity';
 import { UsuariosService } from '../usuarios/usuarios.service';
+import { DisponibilidadService } from '../disponibilidad/disponibilidad.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { AppointmentsService } from './appointments.service';
 import { Appointment } from './entities/appointment.entity';
 
@@ -23,10 +25,13 @@ describe('AppointmentsService', () => {
     create: jest.Mock;
     save: jest.Mock;
     findOne: jest.Mock;
+    find: jest.Mock;
     createQueryBuilder: jest.Mock;
     count: jest.Mock;
   };
   let usuariosService: { findOne: jest.Mock };
+  let disponibilidadService: { listarPorPaciente: jest.Mock };
+  let notificationsService: { crear: jest.Mock };
   let queryBuilder: {
     leftJoinAndSelect: jest.Mock;
     orderBy: jest.Mock;
@@ -46,17 +51,22 @@ describe('AppointmentsService', () => {
       create: jest.fn((data) => data),
       save: jest.fn((data) => Promise.resolve({ id: 'turno-1', ...data })),
       findOne: jest.fn(),
+      find: jest.fn().mockResolvedValue([]),
       createQueryBuilder: jest.fn(() => queryBuilder),
       count: jest.fn(),
     };
 
     usuariosService = { findOne: jest.fn() };
+    disponibilidadService = { listarPorPaciente: jest.fn().mockResolvedValue([]) };
+    notificationsService = { crear: jest.fn().mockResolvedValue({ id: 'notif-1' }) };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AppointmentsService,
         { provide: getRepositoryToken(Appointment), useValue: repo },
         { provide: UsuariosService, useValue: usuariosService },
+        { provide: DisponibilidadService, useValue: disponibilidadService },
+        { provide: NotificationsService, useValue: notificationsService },
       ],
     }).compile();
 
@@ -315,4 +325,60 @@ describe('AppointmentsService', () => {
       await expect(service.existeVinculo(medico.id, paciente.id)).resolves.toBe(false);
     });
   });
+
+  describe('crear por médico', () => {
+    it('permite a un médico agendar un turno para su paciente y notificarlo', async () => {
+      usuariosService.findOne.mockImplementation((id) => {
+        if (id === paciente.id) return Promise.resolve(paciente);
+        if (id === medico.id) return Promise.resolve(medico);
+        return Promise.resolve(null);
+      });
+
+      const dto = {
+        pacienteId: paciente.id,
+        fecha: fechaFutura(),
+        motivo: 'Control postoperatorio',
+      };
+
+      const res = await service.crear(medico, dto);
+      expect(res).toBeDefined();
+      expect(notificationsService.crear).toHaveBeenCalledWith(
+        paciente.id,
+        'Nuevo turno médico programado',
+        expect.any(String),
+        'turno_agendado',
+      );
+    });
+  });
+
+  describe('obtenerDisponibilidadCruzada', () => {
+    it('calcula slots de disponibilidad cruzada excluyendo conflictos', async () => {
+      usuariosService.findOne.mockImplementation((id) => {
+        if (id === paciente.id) return Promise.resolve(paciente);
+        if (id === medico.id) return Promise.resolve(medico);
+        return Promise.resolve(null);
+      });
+
+      disponibilidadService.listarPorPaciente.mockResolvedValue([
+        {
+          id: 'b-1',
+          pacienteId: paciente.id,
+          titulo: 'Trabajo Lunes',
+          esRecurrente: true,
+          diaSemana: 1,
+          horaInicio: '08:00',
+          horaFin: '13:00',
+        },
+      ]);
+
+      const res = await service.obtenerDisponibilidadCruzada(medico.id, paciente.id, 10);
+      expect(res).toBeDefined();
+      expect(Array.isArray(res.opciones)).toBe(true);
+      if (res.opciones.length > 0) {
+        expect(res.opciones[0]).toHaveProperty('fecha');
+        expect(res.opciones[0]).toHaveProperty('fechaFormateada');
+      }
+    });
+  });
 });
+

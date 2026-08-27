@@ -6,6 +6,7 @@ import { cerrarTurnoExpress } from '../../api/cierreExpress';
 import { extraerMensajeError } from '../../api/errors';
 import { crearOrdenEstudio } from '../../api/studyOrders';
 import { obtenerSalaTeleconsult } from '../../api/teleconsult';
+import { ModalTurnoDinamico } from '../../components/ModalTurnoDinamico';
 import type { Appointment } from '../../types';
 
 export function AgendaPage() {
@@ -15,6 +16,12 @@ export function AgendaPage() {
   const [error, setError] = useState<string | null>(null);
   const [mensajeExito, setMensajeExito] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+
+  // Estado para modal de turno dinámico cruzado
+  const [turnoDinamicoPaciente, setTurnoDinamicoPaciente] = useState<{
+    pacienteId: string;
+    nombrePaciente: string;
+  } | null>(null);
 
   // Estado para modal de orden de estudio
   const [turnoOrdenando, setTurnoOrdenando] = useState<Appointment | null>(null);
@@ -137,6 +144,25 @@ export function AgendaPage() {
                 <td className="acciones">
                   {t.estado === 'pendiente' && (
                     <>
+                      <button
+                        type="button"
+                        style={{
+                          background: 'linear-gradient(135deg, #15803d 0%, #166534 100%)',
+                          color: '#ffffff',
+                          fontWeight: 700,
+                          boxShadow: '0 2px 4px rgba(22, 101, 52, 0.2)',
+                        }}
+                        onClick={() =>
+                          setTurnoDinamicoPaciente({
+                            pacienteId: t.pacienteId,
+                            nombrePaciente: t.paciente
+                              ? `${t.paciente.nombre} ${t.paciente.apellido}`
+                              : 'Paciente',
+                          })
+                        }
+                      >
+                        📅 TURNO
+                      </button>
                       <button onClick={() => onUnirseVideollamada(t.id)}>Videollamada</button>
                       <button onClick={() => abrirCierre(t.id)}>Cerrar turno</button>
                       <Link to={`/medico/pacientes/${t.pacienteId}/historia-clinica`}>
@@ -264,6 +290,21 @@ export function AgendaPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {turnoDinamicoPaciente && (
+        <ModalTurnoDinamico
+          pacienteId={turnoDinamicoPaciente.pacienteId}
+          nombrePaciente={turnoDinamicoPaciente.nombrePaciente}
+          onClose={() => setTurnoDinamicoPaciente(null)}
+          onTurnoAgendado={(nuevo) => {
+            setTurnoDinamicoPaciente(null);
+            cargar();
+            setMensajeExito(
+              `Turno agendado exitosamente para el ${new Date(nuevo.fecha).toLocaleString('es-AR')}.`,
+            );
+          }}
+        />
       )}
     </div>
   );

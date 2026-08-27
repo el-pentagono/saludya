@@ -1,8 +1,9 @@
 import apiClient from './client';
-import type { Appointment } from '../types';
+import type { Appointment, ResultadoDisponibilidadCruzada } from '../types';
 
 export interface ReservarTurnoInput {
-  medicoId: string;
+  medicoId?: string;
+  pacienteId?: string;
   fecha: string;
   motivo?: string;
 }
@@ -15,3 +16,12 @@ export const reservarTurno = (input: ReservarTurnoInput) =>
 
 export const cancelarTurno = (id: string) =>
   apiClient.patch<Appointment>(`/api/appointments/${id}/cancelar`).then((r) => r.data);
+
+export const obtenerDisponibilidadCruzada = (medicoId?: string, pacienteId?: string) => {
+  const params: Record<string, string> = {};
+  if (medicoId) params.medicoId = medicoId;
+  if (pacienteId) params.pacienteId = pacienteId;
+  return apiClient
+    .get<ResultadoDisponibilidadCruzada>('/api/appointments/disponibilidad-cruzada', { params })
+    .then((r) => r.data);
+};

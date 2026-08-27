@@ -195,3 +195,28 @@ export interface StudyOrder {
   fechaControlSugerida?: string;
   fechaCreacion: string;
 }
+
+export interface BloqueDisponibilidad {
+  id: string;
+  pacienteId: string;
+  titulo: string;
+  esRecurrente: boolean;
+  diaSemana: number | null;
+  fechaPuntual: string | null;
+  horaInicio: string;
+  horaFin: string;
+  fechaCreacion: string;
+}
+
+export interface OpcionTurnoCruzado {
+  fecha: string;
+  fechaFormateada: string;
+  diaSemana: string;
+  hora: string;
+}
+
+export interface ResultadoDisponibilidadCruzada {
+  opciones: OpcionTurnoCruzado[];
+  mensaje: string | null;
+}
+

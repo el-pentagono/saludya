@@ -30,6 +30,8 @@ import { BovedaSaludMentalModule } from './modules/boveda-salud-mental/boveda-sa
 import { AmbientAiModule } from './modules/ambient-ai/ambient-ai.module';
 import { CierreExpressModule } from './modules/cierre-express/cierre-express.module';
 import { DemoSeedModule } from './modules/demo-seed/demo-seed.module';
+import { DisponibilidadModule } from './modules/disponibilidad/disponibilidad.module';
+import { BloqueDisponibilidad } from './modules/disponibilidad/entities/bloque-disponibilidad.entity';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { StudyOrdersModule } from './modules/study-orders/study-orders.module';
 
@@ -45,13 +47,14 @@ import { StudyOrdersModule } from './modules/study-orders/study-orders.module';
         username: config.get('database.username'),
         password: config.get('database.password'),
         database: config.get('database.database'),
-        entities: [Usuario, ObraSocial, Appointment, MedicalRecord, Treatment, TreatmentFollowUp, Document, TriajeCritico, RegistroSaludMental, TranscripcionConsulta, Notification, StudyOrder],
+        entities: [Usuario, ObraSocial, Appointment, MedicalRecord, Treatment, TreatmentFollowUp, Document, TriajeCritico, RegistroSaludMental, TranscripcionConsulta, Notification, StudyOrder, BloqueDisponibilidad],
         synchronize: config.get<boolean>('database.synchronize'),
         logging: config.get<boolean>('database.logging'),
         autoLoadEntities: true,
       }),
     }),
-    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule, AmbientAiModule, CierreExpressModule, NotificationsModule, StudyOrdersModule, DemoSeedModule,
+    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule, AmbientAiModule, CierreExpressModule, NotificationsModule, StudyOrdersModule, DemoSeedModule, DisponibilidadModule,
   ],
 })
 export class AppModule {}
+

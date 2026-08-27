@@ -14,6 +14,7 @@ import { TriagePage as AdminTriagePage } from './pages/admin/TriagePage';
 import { TurnosPage as AdminTurnosPage } from './pages/admin/TurnosPage';
 import { UsersPage } from './pages/admin/UsersPage';
 import { AppointmentsPage } from './pages/AppointmentsPage';
+import { AvailabilityPage } from './pages/AvailabilityPage';
 import { BovedaSaludMentalPage } from './pages/BovedaSaludMentalPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { DocumentsPage } from './pages/DocumentsPage';
@@ -58,6 +59,7 @@ export default function App() {
 
               <Route element={<RequireRole roles={['paciente']} />}>
                 <Route path="/turnos" element={<AppointmentsPage />} />
+                <Route path="/mi-disponibilidad" element={<AvailabilityPage />} />
                 <Route path="/recetas" element={<PrescriptionsPage />} />
                 <Route path="/historia-clinica" element={<MedicalRecordsPage />} />
                 <Route path="/documentos" element={<DocumentsPage />} />

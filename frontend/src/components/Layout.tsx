@@ -19,6 +19,7 @@ export function Layout() {
             Inicio
           </NavLink>
           <NavLink to="/turnos">Mis turnos</NavLink>
+          <NavLink to="/mi-disponibilidad">Mi disponibilidad</NavLink>
           <NavLink to="/recetas">Recetas y estudios</NavLink>
           <NavLink to="/historia-clinica">Historia clínica</NavLink>
           <NavLink to="/documentos">Documentos</NavLink>

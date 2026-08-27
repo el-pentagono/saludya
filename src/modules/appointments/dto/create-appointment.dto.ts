@@ -2,9 +2,21 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsOptional, IsString, IsUUID, Length } from 'class-validator';
 
 export class CreateAppointmentDto {
-  @ApiProperty({ description: 'ID del médico con quien se reserva el turno' })
+  @ApiProperty({
+    description: 'ID del médico con quien se reserva el turno (opcional si agenda el propio médico)',
+    required: false,
+  })
+  @IsOptional()
   @IsUUID(undefined, { message: 'El médico indicado no es válido' })
-  medicoId: string;
+  medicoId?: string;
+
+  @ApiProperty({
+    description: 'ID del paciente para quien se reserva el turno (obligatorio si agenda el médico)',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID(undefined, { message: 'El paciente indicado no es válido' })
+  pacienteId?: string;
 
   @ApiProperty({ description: 'Fecha y hora del turno (ISO 8601)' })
   @IsDateString({}, { message: 'La fecha debe ser una fecha válida' })

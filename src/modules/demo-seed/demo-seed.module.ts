@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TranscripcionConsulta } from '../ambient-ai/entities/transcripcion-consulta.entity';
 import { Appointment } from '../appointments/entities/appointment.entity';
+import { BloqueDisponibilidad } from '../disponibilidad/entities/bloque-disponibilidad.entity';
 import { MedicalRecord } from '../medical-records/entities/medical-record.entity';
 import { Notification } from '../notifications/entities/notification.entity';
 import { StudyOrder } from '../study-orders/entities/study-order.entity';
@@ -23,6 +24,7 @@ import { DemoSeedService } from './demo-seed.service';
       TriajeCritico,
       Notification,
       TranscripcionConsulta,
+      BloqueDisponibilidad,
     ]),
   ],
   providers: [DemoSeedService],

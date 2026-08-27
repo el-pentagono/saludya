@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { UsuarioActual } from '../../common/decorators/usuario-actual.decorator';
@@ -16,11 +26,32 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 export class AppointmentsController {
   constructor(private readonly service: AppointmentsService) {}
 
+  @Get('disponibilidad-cruzada')
+  @Roles(Rol.MEDICO, Rol.PACIENTE)
+  @ApiOperation({
+    summary:
+      'Cruza la agenda del médico con los turnos y bloques personales del paciente para sugerir 1 o 2 opciones de turno',
+  })
+  disponibilidadCruzada(
+    @Query('medicoId') medicoId: string,
+    @Query('pacienteId') pacienteId: string,
+    @UsuarioActual() usuario: Usuario,
+  ) {
+    const medId = usuario.rol === Rol.MEDICO ? usuario.id : medicoId;
+    const pacId = usuario.rol === Rol.PACIENTE ? usuario.id : pacienteId;
+
+    if (!medId || !pacId) {
+      throw new BadRequestException('Se requieren médico y paciente para calcular la disponibilidad cruzada');
+    }
+
+    return this.service.obtenerDisponibilidadCruzada(medId, pacId);
+  }
+
   @Post()
-  @Roles(Rol.PACIENTE)
-  @ApiOperation({ summary: 'Reservar un turno con un médico' })
-  crear(@UsuarioActual() paciente: Usuario, @Body() dto: CreateAppointmentDto) {
-    return this.service.crear(paciente, dto);
+  @Roles(Rol.PACIENTE, Rol.MEDICO)
+  @ApiOperation({ summary: 'Reservar un turno (paciente o médico para su paciente)' })
+  crear(@UsuarioActual() usuario: Usuario, @Body() dto: CreateAppointmentDto) {
+    return this.service.crear(usuario, dto);
   }
 
   @Get()
