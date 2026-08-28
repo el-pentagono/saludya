@@ -89,4 +89,93 @@ describe('AuthService', () => {
       expect(resultado.accessToken).toBe('token-falso');
     });
   });
+
+  describe('login', () => {
+    it('inicia sesión exitosamente con paciente.demo@saludya.com y Paciente#2026', async () => {
+      const hash = await require('bcrypt').hash('Paciente#2026', 10);
+      usuariosRepo.findOne.mockResolvedValueOnce({
+        id: 'paciente-demo-id',
+        email: 'paciente.demo@saludya.com',
+        nombre: 'Lucas',
+        apellido: 'Benítez',
+        rol: 'paciente',
+        password: hash,
+        activo: true,
+      });
+
+      const resultado = await service.login({
+        email: 'paciente.demo@saludya.com',
+        password: 'Paciente#2026',
+      });
+
+      expect(resultado).toHaveProperty('accessToken', 'token-falso');
+      expect(resultado.usuario).toEqual(
+        expect.objectContaining({
+          id: 'paciente-demo-id',
+          email: 'paciente.demo@saludya.com',
+          rol: 'paciente',
+        }),
+      );
+    });
+
+    it('acepta login si el email tiene espacios o mayúsculas', async () => {
+      const hash = await require('bcrypt').hash('Paciente#2026', 10);
+      usuariosRepo.findOne.mockResolvedValueOnce({
+        id: 'paciente-demo-id',
+        email: 'paciente.demo@saludya.com',
+        nombre: 'Lucas',
+        apellido: 'Benítez',
+        rol: 'paciente',
+        password: hash,
+        activo: true,
+      });
+
+      const resultado = await service.login({
+        email: '  PACIENTE.DEMO@SALUDYA.COM  ',
+        password: 'Paciente#2026',
+      });
+
+      expect(resultado).toHaveProperty('accessToken', 'token-falso');
+    });
+
+    it('actualiza el hash y permite login con Paciente#2026 si la clave en BD era anterior', async () => {
+      const viejoHash = await require('bcrypt').hash('ClaveVieja123', 10);
+      const usuarioEnBd = {
+        id: 'paciente-demo-id',
+        email: 'paciente.demo@saludya.com',
+        nombre: 'Lucas',
+        apellido: 'Benítez',
+        rol: 'paciente',
+        password: viejoHash,
+        activo: true,
+      };
+      usuariosRepo.findOne.mockResolvedValueOnce(usuarioEnBd);
+
+      const resultado = await service.login({
+        email: 'paciente.demo@saludya.com',
+        password: 'Paciente#2026',
+      });
+
+      expect(resultado).toHaveProperty('accessToken', 'token-falso');
+      expect(usuariosRepo.save).toHaveBeenCalled();
+    });
+
+    it('si no existe en BD, crea el usuario paciente demo sobre la marcha y retorna token', async () => {
+      usuariosRepo.findOne.mockResolvedValue(null);
+
+      const resultado = await service.login({
+        email: 'paciente.demo@saludya.com',
+        password: 'Paciente#2026',
+      });
+
+      expect(resultado).toHaveProperty('accessToken', 'token-falso');
+      expect(usuariosRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: 'paciente.demo@saludya.com',
+          rol: 'paciente',
+          activo: true,
+        }),
+      );
+    });
+  });
 });

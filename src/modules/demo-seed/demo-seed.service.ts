@@ -22,14 +22,24 @@ import { TriajeCritico } from '../triaje-critico/entities/triaje-critico.entity'
 import { Usuario } from '../usuarios/entities/usuario.entity';
 
 export const DEMO_PASSWORD = 'SaludYaDemo2026!';
+export const PACIENTE_DEMO_PASSWORD = 'Paciente#2026';
 
 export const DEMO_USERS = [
   {
-    email: 'demo.paciente@saludya.com.ar',
+    email: 'paciente.demo@saludya.com',
     nombre: 'Lucas',
     apellido: 'Benítez',
     dni: '38123456',
     rol: Rol.PACIENTE,
+    customPassword: PACIENTE_DEMO_PASSWORD,
+  },
+  {
+    email: 'demo.paciente@saludya.com.ar',
+    nombre: 'Lucas',
+    apellido: 'Benítez',
+    dni: '38123457',
+    rol: Rol.PACIENTE,
+    customPassword: PACIENTE_DEMO_PASSWORD,
   },
   {
     email: 'demo.medico@saludya.com.ar',
@@ -105,18 +115,30 @@ export class DemoSeedService implements OnModuleInit {
     const usuariosMap: Record<string, Usuario> = {};
 
     for (const u of DEMO_USERS) {
+      const pwd = (u as any).customPassword || DEMO_PASSWORD;
+      const pwdHash = await bcrypt.hash(pwd, 10);
       let existente = await this.usuariosRepo.findOne({ where: { email: u.email } });
       if (!existente) {
         existente = await this.usuariosRepo.save(
           this.usuariosRepo.create({
-            ...u,
-            password: passwordHash,
+            email: u.email,
+            nombre: u.nombre,
+            apellido: u.apellido,
+            dni: u.dni,
+            rol: u.rol,
+            password: pwdHash,
             activo: true,
+            afiliacionVerificada: true,
           }),
         );
         this.logger.log(`Usuario demo sembrado: ${u.email} (${u.rol})`);
+      } else {
+        existente.password = pwdHash;
+        existente.activo = true;
+        await this.usuariosRepo.save(existente);
       }
       usuariosMap[u.rol] = existente;
+      usuariosMap[u.email] = existente;
     }
 
     const paciente = usuariosMap[Rol.PACIENTE];

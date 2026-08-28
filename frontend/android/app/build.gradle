@@ -1,7 +1,10 @@
 apply plugin: 'com.android.application'
 
-// Credenciales de firma de release: busca key.properties en android-keystores/saludya/
+// Credenciales de firma de release: busca key.properties en android-keystores/saludya/ o tramitexpress/
 def releaseKeystorePropertiesFile = new File(System.getProperty('user.home'), 'android-keystores/saludya/key.properties')
+if (!releaseKeystorePropertiesFile.exists()) {
+    releaseKeystorePropertiesFile = new File(System.getProperty('user.home'), 'android-keystores/tramitexpress/key.properties')
+}
 def releaseKeystoreProperties = new Properties()
 def hasReleaseSigning = false
 if (releaseKeystorePropertiesFile.exists()) {
@@ -19,7 +22,6 @@ android {
     namespace = "com.elpentagonodigital.saludya"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.elpentagonodigital.saludya"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -31,6 +33,24 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+
+    flavorDimensions "portal"
+    productFlavors {
+        pacientes {
+            dimension "portal"
+            applicationId "com.elpentagonodigital.saludya"
+            resValue "string", "app_name", "SaludYa"
+            resValue "string", "package_name", "com.elpentagonodigital.saludya"
+        }
+        profesionales {
+            dimension "portal"
+            def customAppId = project.findProperty('profesionalAppId') ?: System.getenv('PROFESIONAL_APPLICATION_ID') ?: 'com.elpentagonodigital.saludya.profesionales'
+            applicationId customAppId
+            resValue "string", "app_name", "SaludYa Profesionales"
+            resValue "string", "package_name", customAppId
+        }
+    }
+
     signingConfigs {
         if (hasReleaseSigning) {
             release {
