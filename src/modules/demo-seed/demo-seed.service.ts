@@ -26,18 +26,10 @@ export const PACIENTE_DEMO_PASSWORD = 'Paciente#2026';
 
 export const DEMO_USERS = [
   {
-    email: 'paciente.demo@saludya.com',
-    nombre: 'Lucas',
-    apellido: 'Benítez',
-    dni: '38123456',
-    rol: Rol.PACIENTE,
-    customPassword: PACIENTE_DEMO_PASSWORD,
-  },
-  {
     email: 'demo.paciente@saludya.com.ar',
     nombre: 'Lucas',
     apellido: 'Benítez',
-    dni: '38123457',
+    dni: '38123456',
     rol: Rol.PACIENTE,
     customPassword: PACIENTE_DEMO_PASSWORD,
   },

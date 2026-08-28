@@ -54,25 +54,25 @@ export class AuthService {
       where: [{ email: rawEmail }, { email: emailLower }],
     });
 
-    // 2. Soporte para variantes/alias del usuario paciente demo
+    // 2. Soporte para variantes/alias del usuario paciente demo hacia la cuenta canónica
     if (!usuario) {
-      if (emailLower === 'paciente.demo@saludya.com' || emailLower === 'paciente.demo@saludya.com.ar') {
+      if (
+        emailLower === 'paciente.demo@saludya.com' ||
+        emailLower === 'paciente.demo@saludya.com.ar' ||
+        emailLower === 'demo.paciente@saludya.com'
+      ) {
         usuario = await this.usuariosRepo.findOne({
-          where: [{ email: 'demo.paciente@saludya.com.ar' }, { email: 'paciente.demo@saludya.com' }],
-        });
-      } else if (emailLower === 'demo.paciente@saludya.com.ar' || emailLower === 'demo.paciente@saludya.com') {
-        usuario = await this.usuariosRepo.findOne({
-          where: [{ email: 'paciente.demo@saludya.com' }, { email: 'demo.paciente@saludya.com.ar' }],
+          where: { email: 'demo.paciente@saludya.com.ar' },
         });
       }
     }
 
-    // 3. Si aún no existe en BD pero es el paciente demo solicitado, lo creamos de inmediato con estado activo
-    if (!usuario && (emailLower === 'paciente.demo@saludya.com' || emailLower === 'demo.paciente@saludya.com.ar')) {
+    // 3. Si aún no existe en BD pero es el paciente demo solicitado, lo creamos con el email canónico oficial
+    if (!usuario && (emailLower === 'demo.paciente@saludya.com.ar' || emailLower === 'paciente.demo@saludya.com')) {
       const hash = await bcrypt.hash(dto.password || 'Paciente#2026', 10);
       usuario = await this.usuariosRepo.save(
         this.usuariosRepo.create({
-          email: emailLower,
+          email: 'demo.paciente@saludya.com.ar',
           password: hash,
           nombre: 'Lucas',
           apellido: 'Benítez',

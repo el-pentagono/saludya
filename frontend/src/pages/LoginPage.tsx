@@ -110,7 +110,7 @@ export function LoginPage() {
           <button
             type="button"
             onClick={() => {
-              setEmail('paciente.demo@saludya.com');
+              setEmail('demo.paciente@saludya.com.ar');
               setPassword('Paciente#2026');
             }}
             style={{

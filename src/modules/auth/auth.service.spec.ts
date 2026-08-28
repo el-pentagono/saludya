@@ -91,11 +91,11 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    it('inicia sesión exitosamente con paciente.demo@saludya.com y Paciente#2026', async () => {
+    it('inicia sesión exitosamente con demo.paciente@saludya.com.ar y Paciente#2026', async () => {
       const hash = await require('bcrypt').hash('Paciente#2026', 10);
       usuariosRepo.findOne.mockResolvedValueOnce({
         id: 'paciente-demo-id',
-        email: 'paciente.demo@saludya.com',
+        email: 'demo.paciente@saludya.com.ar',
         nombre: 'Lucas',
         apellido: 'Benítez',
         rol: 'paciente',
@@ -104,7 +104,7 @@ describe('AuthService', () => {
       });
 
       const resultado = await service.login({
-        email: 'paciente.demo@saludya.com',
+        email: 'demo.paciente@saludya.com.ar',
         password: 'Paciente#2026',
       });
 
@@ -112,7 +112,7 @@ describe('AuthService', () => {
       expect(resultado.usuario).toEqual(
         expect.objectContaining({
           id: 'paciente-demo-id',
-          email: 'paciente.demo@saludya.com',
+          email: 'demo.paciente@saludya.com.ar',
           rol: 'paciente',
         }),
       );
@@ -122,7 +122,7 @@ describe('AuthService', () => {
       const hash = await require('bcrypt').hash('Paciente#2026', 10);
       usuariosRepo.findOne.mockResolvedValueOnce({
         id: 'paciente-demo-id',
-        email: 'paciente.demo@saludya.com',
+        email: 'demo.paciente@saludya.com.ar',
         nombre: 'Lucas',
         apellido: 'Benítez',
         rol: 'paciente',
@@ -131,18 +131,41 @@ describe('AuthService', () => {
       });
 
       const resultado = await service.login({
-        email: '  PACIENTE.DEMO@SALUDYA.COM  ',
+        email: '  DEMO.PACIENTE@SALUDYA.COM.AR  ',
         password: 'Paciente#2026',
       });
 
       expect(resultado).toHaveProperty('accessToken', 'token-falso');
     });
 
+    it('resuelve alias paciente.demo@saludya.com hacia la cuenta canónica demo.paciente@saludya.com.ar', async () => {
+      const hash = await require('bcrypt').hash('Paciente#2026', 10);
+      usuariosRepo.findOne
+        .mockResolvedValueOnce(null) // Primera búsqueda por paciente.demo@saludya.com
+        .mockResolvedValueOnce({ // Búsqueda de alias por demo.paciente@saludya.com.ar
+          id: 'paciente-demo-id',
+          email: 'demo.paciente@saludya.com.ar',
+          nombre: 'Lucas',
+          apellido: 'Benítez',
+          rol: 'paciente',
+          password: hash,
+          activo: true,
+        });
+
+      const resultado = await service.login({
+        email: 'paciente.demo@saludya.com',
+        password: 'Paciente#2026',
+      });
+
+      expect(resultado).toHaveProperty('accessToken', 'token-falso');
+      expect(resultado.usuario.email).toBe('demo.paciente@saludya.com.ar');
+    });
+
     it('actualiza el hash y permite login con Paciente#2026 si la clave en BD era anterior', async () => {
       const viejoHash = await require('bcrypt').hash('ClaveVieja123', 10);
       const usuarioEnBd = {
         id: 'paciente-demo-id',
-        email: 'paciente.demo@saludya.com',
+        email: 'demo.paciente@saludya.com.ar',
         nombre: 'Lucas',
         apellido: 'Benítez',
         rol: 'paciente',
@@ -152,7 +175,7 @@ describe('AuthService', () => {
       usuariosRepo.findOne.mockResolvedValueOnce(usuarioEnBd);
 
       const resultado = await service.login({
-        email: 'paciente.demo@saludya.com',
+        email: 'demo.paciente@saludya.com.ar',
         password: 'Paciente#2026',
       });
 
@@ -160,18 +183,18 @@ describe('AuthService', () => {
       expect(usuariosRepo.save).toHaveBeenCalled();
     });
 
-    it('si no existe en BD, crea el usuario paciente demo sobre la marcha y retorna token', async () => {
+    it('si no existe en BD, crea el usuario paciente demo canónico y retorna token', async () => {
       usuariosRepo.findOne.mockResolvedValue(null);
 
       const resultado = await service.login({
-        email: 'paciente.demo@saludya.com',
+        email: 'demo.paciente@saludya.com.ar',
         password: 'Paciente#2026',
       });
 
       expect(resultado).toHaveProperty('accessToken', 'token-falso');
       expect(usuariosRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          email: 'paciente.demo@saludya.com',
+          email: 'demo.paciente@saludya.com.ar',
           rol: 'paciente',
           activo: true,
         }),
