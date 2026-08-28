@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsOptional,
@@ -12,6 +13,8 @@ import {
 
 export class RegisterDto {
   @ApiProperty({ example: 'ciudadano@ejemplo.com' })
+  // Mismo motivo que en LoginDto: recorta espacios antes de validar.
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsEmail({}, { message: 'El correo electrónico no es válido' })
   email: string;
 

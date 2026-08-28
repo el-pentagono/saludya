@@ -9,7 +9,6 @@ import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { Usuario } from '../usuarios/entities/usuario.entity';
 import { ObrasSocialesService } from '../obras-sociales/obras-sociales.service';
-import { Rol } from '../../common/enums/rol.enum';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -49,61 +48,24 @@ export class AuthService {
     const rawEmail = (dto.email || '').trim();
     const emailLower = rawEmail.toLowerCase();
 
-    // 1. Buscar por email exacto o en minúsculas
-    let usuario = await this.usuariosRepo.findOne({
+    // Búsqueda tolerante a espacios/mayúsculas: no crea ni modifica nada,
+    // solo intenta el email tal cual se escribió en el input.
+    const usuario = await this.usuariosRepo.findOne({
       where: [{ email: rawEmail }, { email: emailLower }],
     });
 
-    // 2. Soporte para variantes/alias del usuario paciente demo hacia la cuenta canónica
-    if (!usuario) {
-      if (
-        emailLower === 'paciente.demo@saludya.com' ||
-        emailLower === 'paciente.demo@saludya.com.ar' ||
-        emailLower === 'demo.paciente@saludya.com'
-      ) {
-        usuario = await this.usuariosRepo.findOne({
-          where: { email: 'demo.paciente@saludya.com.ar' },
-        });
-      }
-    }
-
-    // 3. Si aún no existe en BD pero es el paciente demo solicitado, lo creamos con el email canónico oficial
-    if (!usuario && (emailLower === 'demo.paciente@saludya.com.ar' || emailLower === 'paciente.demo@saludya.com')) {
-      const hash = await bcrypt.hash(dto.password || 'Paciente#2026', 10);
-      usuario = await this.usuariosRepo.save(
-        this.usuariosRepo.create({
-          email: 'demo.paciente@saludya.com.ar',
-          password: hash,
-          nombre: 'Lucas',
-          apellido: 'Benítez',
-          dni: '38123456',
-          rol: Rol.PACIENTE,
-          activo: true,
-          afiliacionVerificada: true,
-        }),
-      );
-    }
-
+    // Mensaje idéntico exista o no la cuenta, y exista o no la password
+    // correcta: no le damos a un atacante pistas de cuáles emails están
+    // registrados ni forma de "arreglar" una cuenta ajena adivinando una
+    // contraseña conocida.
     if (!usuario || !usuario.activo) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    let valido = await bcrypt.compare(dto.password, usuario.password);
-
-    // Si el hash previo en BD no coincidió pero envía una clave demo válida:
-    if (!valido && (dto.password === 'Paciente#2026' || dto.password === 'SaludYaDemo2026!')) {
-      if (
-        usuario.rol === Rol.PACIENTE ||
-        usuario.email.toLowerCase().includes('demo') ||
-        usuario.email.toLowerCase().includes('paciente')
-      ) {
-        usuario.password = await bcrypt.hash(dto.password, 10);
-        await this.usuariosRepo.save(usuario);
-        valido = true;
-      }
+    const valido = await bcrypt.compare(dto.password, usuario.password);
+    if (!valido) {
+      throw new UnauthorizedException('Credenciales inválidas');
     }
-
-    if (!valido) throw new UnauthorizedException('Credenciales inválidas');
 
     return this.generarToken(usuario);
   }
