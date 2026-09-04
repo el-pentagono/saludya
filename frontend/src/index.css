@@ -426,6 +426,84 @@ label {
   margin: 0;
 }
 
+@media (max-width: 480px) {
+  .perfil {
+    grid-template-columns: 1fr;
+    gap: 0.2rem 0;
+  }
+
+  .perfil dt {
+    margin-top: 0.9rem;
+  }
+
+  .perfil dt:first-child {
+    margin-top: 0;
+  }
+}
+
+/* Fila de valor + botón de edición dentro de un <dd> del perfil */
+.perfil-campo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.perfil-campo span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.btn-editar-campo {
+  flex-shrink: 0;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  padding: 0.2rem 0.6rem;
+  font-size: 0.78rem;
+  border-radius: 6px;
+}
+
+.btn-editar-campo:hover {
+  background: var(--color-bg);
+  color: var(--color-primary-hover);
+}
+
+/* Formulario de edición inline que reemplaza al <dd> mientras se edita un campo */
+.perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 320px;
+}
+
+.perfil-form .error {
+  margin: 0;
+}
+
+.perfil-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.perfil-acciones button {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+}
+
+.btn-secundario {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn-secundario:hover {
+  background: var(--color-bg);
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -541,17 +619,16 @@ label {
 }
 
 .notif-dropdown {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  width: 340px;
-  max-width: 90vw;
+  /* Posición, ancho y alto real los calcula NotificationBell según el espacio
+     disponible en la ventana (ver useLayoutEffect); esto es solo la apariencia
+     y un resguardo por si el cálculo en JS todavía no corrió. */
+  position: fixed;
+  max-width: calc(100vw - 16px);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   z-index: 100;
-  max-height: 420px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -561,6 +638,8 @@ label {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-bg);
@@ -578,6 +657,7 @@ label {
   padding: 0;
   font-size: 0.75rem;
   border: none;
+  white-space: nowrap;
 }
 
 .notif-header button:hover {
@@ -614,11 +694,13 @@ label {
   font-weight: 700;
   color: var(--color-text);
   margin-bottom: 0.2rem;
+  overflow-wrap: anywhere;
 }
 
 .notif-mensaje {
   color: #4b5563;
   margin: 0;
+  overflow-wrap: anywhere;
   font-size: 0.8rem;
   line-height: 1.35;
 }

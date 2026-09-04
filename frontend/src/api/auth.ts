@@ -24,3 +24,12 @@ export const register = (input: RegisterInput) =>
   apiClient.post<AuthResponse>('/api/auth/register', input).then((r) => r.data);
 
 export const obtenerPerfil = () => apiClient.get<Usuario>('/api/usuarios/yo').then((r) => r.data);
+
+export interface ActualizarPerfilInput {
+  telefono?: string | null;
+  obraSocialId?: string | null;
+  numeroAfiliado?: string | null;
+}
+
+export const actualizarPerfil = (id: string, input: ActualizarPerfilInput) =>
+  apiClient.patch<Usuario>(`/api/usuarios/${id}`, input).then((r) => r.data);
