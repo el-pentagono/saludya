@@ -4,6 +4,7 @@ import type { Appointment, ResultadoDisponibilidadCruzada } from '../types';
 export interface ReservarTurnoInput {
   medicoId?: string;
   pacienteId?: string;
+  menorId?: string;
   fecha: string;
   motivo?: string;
 }

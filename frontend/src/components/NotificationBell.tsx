@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, MouseEvent as ReactMouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   contarNotificacionesNoLeidas,
@@ -87,22 +87,42 @@ export function NotificationBell() {
     };
   }, [abierto]);
 
-  const onMarcarLeida = async (notif: Notification) => {
-    if (!notif.leida) {
-      try {
-        await marcarNotificacionLeida(notif.id);
-        setNotificaciones((prev) =>
-          prev.map((n) => (n.id === notif.id ? { ...n, leida: true } : n)),
-        );
-        setConteoNoLeidas((c) => Math.max(0, c - 1));
-      } catch {
-        // Ignora
-      }
+  const marcarLeidaLocal = async (notif: Notification) => {
+    if (notif.leida) return;
+    try {
+      await marcarNotificacionLeida(notif.id);
+      setNotificaciones((prev) => prev.map((n) => (n.id === notif.id ? { ...n, leida: true } : n)));
+      setConteoNoLeidas((c) => Math.max(0, c - 1));
+    } catch {
+      // Ignora
     }
+  };
+
+  const esNotificacionVacuna = (tipo: string) => tipo.startsWith('vacuna_');
+
+  const onMarcarLeida = async (notif: Notification) => {
+    await marcarLeidaLocal(notif);
     setAbierto(false);
     if (notif.tipo.startsWith('estudio_') || notif.tipo.startsWith('receta_')) {
       navigate('/recetas');
+    } else if (esNotificacionVacuna(notif.tipo) && notif.metadata?.menorId) {
+      navigate(`/mi-familia/${notif.metadata.menorId}`);
     }
+  };
+
+  // Acceso directo desde la alerta: marca como leída, va a la libreta del menor y
+  // abre el modal de turno ya prefiltrado para esa dosis puntual.
+  const onSacarTurnoDesdeNotificacion = async (
+    e: ReactMouseEvent,
+    notif: Notification,
+  ) => {
+    e.stopPropagation();
+    await marcarLeidaLocal(notif);
+    setAbierto(false);
+    if (!notif.metadata?.menorId) return;
+    navigate(`/mi-familia/${notif.metadata.menorId}`, {
+      state: { abrirTurnoParaAplicacion: notif.metadata.aplicacionId },
+    });
   };
 
   const onMarcarTodas = async () => {
@@ -161,6 +181,24 @@ export function NotificationBell() {
                       timeStyle: 'short',
                     })}
                   </span>
+                  {(n.tipo === 'vacuna_proxima' || n.tipo === 'vacuna_atrasada') &&
+                    n.metadata?.menorId && (
+                      <button
+                        type="button"
+                        onClick={(e) => onSacarTurnoDesdeNotificacion(e, n)}
+                        style={{
+                          display: 'block',
+                          marginTop: '0.5rem',
+                          background: n.tipo === 'vacuna_atrasada' ? '#dc2626' : '#0284c7',
+                          color: '#ffffff',
+                          fontSize: '0.78rem',
+                          padding: '0.35rem 0.7rem',
+                          borderRadius: 6,
+                        }}
+                      >
+                        📅 Sacar turno para vacunación
+                      </button>
+                    )}
                 </li>
               ))
             )}

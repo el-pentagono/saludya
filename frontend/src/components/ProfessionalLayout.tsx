@@ -34,6 +34,7 @@ function NavLinksProfesionales({ rol }: { rol: string | undefined }) {
           <NavLink to="/medico/agenda">Mi agenda</NavLink>
           <NavLink to="/medico/estudios">Órdenes de estudio</NavLink>
           <NavLink to="/medico/tratamientos">Tratamientos</NavLink>
+          <NavLink to="/medico/vacunacion">Vacunación</NavLink>
           <NavLink to="/medico/triaje">Triaje crítico</NavLink>
           <NavLink to="/medico/boveda-salud-mental">Bóveda salud mental</NavLink>
         </>
