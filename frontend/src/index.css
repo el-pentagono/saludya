@@ -351,6 +351,22 @@ label {
   color: #991b1b;
 }
 
+/* Urgencia de dosis en la Libreta Sanitaria */
+.badge-aplicada {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-atrasada {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-proxima {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .acciones {
   display: flex;
   gap: 0.5rem;
@@ -669,6 +685,38 @@ label {
   justify-content: flex-end;
   gap: 0.75rem;
   margin-top: 1rem;
+}
+
+/* Variante de modal usada por FamilyPage, MinorDetailPage, VacunacionPage y
+   ModalTurnoDinamico. Antes no tenía estilos y esas ventanas se renderizaban
+   sueltas dentro del flujo normal de la página en vez de flotar como modal. */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.modal-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-card h3 {
+  margin-top: 0;
+  color: var(--color-primary-dark);
 }
 
 /* Tarjetas de Recetas y Estudios */

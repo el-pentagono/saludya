@@ -36,8 +36,10 @@ import { PatientRecordPage } from './pages/medico/PatientRecordPage';
 import { PrescribePage } from './pages/medico/PrescribePage';
 import { StudyOrdersPage } from './pages/medico/StudyOrdersPage';
 import { TreatmentsPage } from './pages/medico/TreatmentsPage';
+import { VacunacionPage } from './pages/medico/VacunacionPage';
 import { ProfessionalDashboardPage } from './pages/profesionales/ProfessionalDashboardPage';
 import { ProfessionalLoginPage } from './pages/profesionales/ProfessionalLoginPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { RegisterPage } from './pages/RegisterPage';
 
@@ -50,6 +52,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/profesionales/login" element={<ProfessionalLoginPage />} />
           <Route path="/registro" element={<RegisterPage />} />
+          <Route path="/privacidad" element={<PrivacyPolicyPage />} />
 
           {/* ============================================================ */}
           {/* PORTAL 1 — SALUDYA PACIENTES                                 */}
@@ -93,6 +96,7 @@ export default function App() {
                   <Route path="/medico/estudios" element={<StudyOrdersPage />} />
                   <Route path="/medico/triaje" element={<MedicoTriagePage />} />
                   <Route path="/medico/tratamientos" element={<TreatmentsPage />} />
+                  <Route path="/medico/vacunacion" element={<VacunacionPage />} />
                   <Route path="/medico/boveda-salud-mental" element={<BovedaListPage />} />
                   <Route
                     path="/medico/pacientes/:pacienteId/historia-clinica"
