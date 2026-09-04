@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { reservarTurno } from '../api/appointments';
 import { extraerMensajeError } from '../api/errors';
 import {
@@ -10,13 +10,17 @@ import {
   obtenerMenor,
 } from '../api/family';
 import { listarMedicos } from '../api/usuarios';
-import type { Appointment, Medico, MenorACargo } from '../types';
+import { obtenerLibretaMenor, vincularTurnoVacuna } from '../api/vacunacion';
+import { LibretaSanitaria } from '../components/LibretaSanitaria';
+import type { AplicacionVacuna, Appointment, Medico, MenorACargo } from '../types';
 
 export function MinorDetailPage() {
   const { menorId } = useParams<{ menorId: string }>();
+  const location = useLocation();
   const [menor, setMenor] = useState<MenorACargo | null>(null);
   const [turnos, setTurnos] = useState<Appointment[]>([]);
   const [medicos, setMedicos] = useState<Medico[]>([]);
+  const [libreta, setLibreta] = useState<AplicacionVacuna[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mensajeExito, setMensajeExito] = useState<string | null>(null);
@@ -42,6 +46,20 @@ export function MinorDetailPage() {
   const [turnoFecha, setTurnoFecha] = useState('');
   const [turnoMotivo, setTurnoMotivo] = useState('');
   const [guardandoTurno, setGuardandoTurno] = useState(false);
+  // Si el turno se abrió desde "Sacar turno" de una dosis de la libreta, guardamos cuál
+  // para vincular el turno recién creado a esa dosis específica.
+  const [aplicacionParaTurno, setAplicacionParaTurno] = useState<AplicacionVacuna | null>(null);
+
+  const cargarLibreta = async (id: string) => {
+    try {
+      const libretaData = await obtenerLibretaMenor(id);
+      setLibreta(libretaData);
+      return libretaData;
+    } catch {
+      setLibreta([]);
+      return [];
+    }
+  };
 
   const cargar = async () => {
     if (!menorId) return;
@@ -60,6 +78,19 @@ export function MinorDetailPage() {
 
       const medicosData = await listarMedicos();
       setMedicos(medicosData);
+
+      const libretaData = await cargarLibreta(menorId);
+
+      // Si llegamos desde el botón "Sacar turno" de una notificación de vacunación,
+      // abrimos directamente el modal de turno prefiltrado para esa dosis.
+      const aplicacionIdSolicitada = (location.state as { abrirTurnoParaAplicacion?: string } | null)
+        ?.abrirTurnoParaAplicacion;
+      if (aplicacionIdSolicitada) {
+        const ap = libretaData.find((a) => a.id === aplicacionIdSolicitada);
+        if (ap) {
+          onSacarTurnoParaVacuna(ap);
+        }
+      }
     } catch (err: unknown) {
       setError(extraerMensajeError(err, 'No se pudo cargar la ficha del menor'));
     } finally {
@@ -71,6 +102,14 @@ export function MinorDetailPage() {
     cargar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menorId]);
+
+  const onSacarTurnoParaVacuna = (ap: AplicacionVacuna) => {
+    setAplicacionParaTurno(ap);
+    setTurnoMotivo(`Vacunación: ${ap.catalogoVacuna?.nombre} (${ap.catalogoVacuna?.dosis})`.trim());
+    setTurnoMedicoId('');
+    setTurnoFecha('');
+    setTurnoModalAbierto(true);
+  };
 
   const calcularEdad = (fechaNacStr?: string): number | null => {
     if (!fechaNacStr) return null;
@@ -141,24 +180,46 @@ export function MinorDetailPage() {
     }
   };
 
+  const onCerrarModalTurno = () => {
+    setTurnoModalAbierto(false);
+    setAplicacionParaTurno(null);
+    setTurnoMotivo('');
+  };
+
   const onSubmitAgendarTurno = async (e: FormEvent) => {
     e.preventDefault();
     if (!menorId || !turnoMedicoId || !turnoFecha) return;
     setError(null);
     setGuardandoTurno(true);
     try {
-      await reservarTurno({
+      const turno = await reservarTurno({
         medicoId: turnoMedicoId,
+        menorId,
         fecha: new Date(turnoFecha).toISOString(),
         motivo: `[Pediátrico - ${menor?.nombre} ${menor?.apellido}] ${turnoMotivo || 'Control pediátrico'}`,
       });
+
+      if (aplicacionParaTurno) {
+        try {
+          await vincularTurnoVacuna(aplicacionParaTurno.id, turno.id);
+        } catch {
+          // El turno ya quedó reservado igual; solo falló el vínculo visual con la libreta
+        }
+      }
+
       setTurnoModalAbierto(false);
       setTurnoMedicoId('');
       setTurnoFecha('');
       setTurnoMotivo('');
-      setMensajeExito('Turno pediátrico reservado con éxito.');
+      setMensajeExito(
+        aplicacionParaTurno
+          ? 'Turno de vacunación reservado con éxito.'
+          : 'Turno pediátrico reservado con éxito.',
+      );
+      setAplicacionParaTurno(null);
       const turnosData = await listarTurnosMenor(menorId);
       setTurnos(turnosData);
+      await cargarLibreta(menorId);
     } catch (err: unknown) {
       setError(extraerMensajeError(err, 'No se pudo reservar el turno'));
     } finally {
@@ -578,7 +639,7 @@ export function MinorDetailPage() {
         )}
       </div>
 
-      {/* Sección 4: Calendario de vacunación y controles pediátricos orientativos */}
+      {/* Sección 4: Libreta Sanitaria Digital (vacunación) */}
       <div
         style={{
           background: '#ffffff',
@@ -587,48 +648,30 @@ export function MinorDetailPage() {
           padding: '1.5rem',
         }}
       >
-        <h2 style={{ margin: '0 0 0.5rem' }}>Carnet de Vacunación & Controles de Salud Recomendados</h2>
+        <h2 style={{ margin: '0 0 0.5rem' }}>💉 Libreta Sanitaria Digital</h2>
         <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', margin: '0 0 1.25rem' }}>
-          Esquema nacional de inmunización y chequeos pediátricos de rutina según la edad del niño:
+          Esquema de vacunación de {menor.nombre} según el Calendario Nacional de Vacunación. Las
+          dosis se marcan automáticamente como aplicadas cuando el pediatra las registra.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-          <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-            <div style={{ fontWeight: 700, color: '#0369a1', marginBottom: '0.35rem' }}>
-              0 a 12 meses (Lactante)
-            </div>
-            <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.85rem', color: '#334155' }}>
-              <li>BCG y Hepatitis B al nacer</li>
-              <li>Neumococo conjugada, Quíntuple y Rotavirus (2, 4 y 6 meses)</li>
-              <li>Meningococo (3 y 5 meses)</li>
-              <li>Control mensual de peso, talla y perímetro cefálico</li>
-            </ul>
-          </div>
-
-          <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-            <div style={{ fontWeight: 700, color: '#0369a1', marginBottom: '0.35rem' }}>
-              1 a 5 años (Primera Infancia)
-            </div>
-            <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.85rem', color: '#334155' }}>
-              <li>Triple Viral (sarampión, rubéola, paperas) a los 12 meses</li>
-              <li>Hepatitis A a los 12 meses</li>
-              <li>Fiebre Amarilla (según zona geográfica)</li>
-              <li>Vacunas de ingreso escolar (5 años): Triple Bacteriana Celular, Polio y Varicela</li>
-            </ul>
-          </div>
-
-          <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-            <div style={{ fontWeight: 700, color: '#0369a1', marginBottom: '0.35rem' }}>
-              11 años en adelante (Preadolescencia)
-            </div>
-            <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.85rem', color: '#334155' }}>
-              <li>Virus Papiloma Humano (VPH) - 2 dosis</li>
-              <li>Triple Bacteriana Acelular (dTap)</li>
-              <li>Meningococo tetravalente (refuerzo)</li>
-              <li>Control oftalmológico y auditivo anual</li>
-            </ul>
-          </div>
-        </div>
+        <LibretaSanitaria
+          aplicaciones={libreta}
+          renderAccion={(ap) => (
+            <button
+              type="button"
+              onClick={() => onSacarTurnoParaVacuna(ap)}
+              style={{
+                background: ap.urgencia === 'atrasada' ? '#dc2626' : '#0284c7',
+                color: '#ffffff',
+                fontSize: '0.82rem',
+                padding: '0.4rem 0.85rem',
+                borderRadius: 6,
+              }}
+            >
+              📅 Sacar turno para vacunación
+            </button>
+          )}
+        />
       </div>
 
       {/* Modal: Subir o reemplazar documento de respaldo */}
@@ -688,17 +731,22 @@ export function MinorDetailPage() {
         </div>
       )}
 
-      {/* Modal: Agendar turno pediátrico para el menor */}
+      {/* Modal: Agendar turno pediátrico (o de vacunación) para el menor */}
       {turnoModalAbierto && (
-        <div className="modal-backdrop" onClick={() => setTurnoModalAbierto(false)}>
+        <div className="modal-backdrop" onClick={onCerrarModalTurno}>
           <div
             className="modal-card"
             style={{ maxWidth: '520px', width: '90%' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3>Agendar Turno Pediátrico</h3>
+            <h3>{aplicacionParaTurno ? 'Sacar Turno para Vacunación' : 'Agendar Turno Pediátrico'}</h3>
             <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)' }}>
               Para el menor: <strong>{menor.nombre} {menor.apellido}</strong>
+              {aplicacionParaTurno && (
+                <>
+                  {' '}· Dosis: <strong>{aplicacionParaTurno.catalogoVacuna?.nombre} ({aplicacionParaTurno.catalogoVacuna?.dosis})</strong>
+                </>
+              )}
             </p>
 
             <form onSubmit={onSubmitAgendarTurno}>
@@ -741,11 +789,11 @@ export function MinorDetailPage() {
 
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
                 <button type="submit" disabled={guardandoTurno}>
-                  {guardandoTurno ? 'Reservando…' : 'Confirmar turno pediátrico'}
+                  {guardandoTurno ? 'Reservando…' : 'Confirmar turno'}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTurnoModalAbierto(false)}
+                  onClick={onCerrarModalTurno}
                   style={{ background: 'transparent', border: '1px solid var(--color-border)' }}
                 >
                   Cancelar

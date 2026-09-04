@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import databaseConfig from './config/database.config';
 import shieldaiConfig from './config/shieldai.config';
@@ -37,10 +38,14 @@ import { MenorACargo } from './modules/familia/entities/menor-a-cargo.entity';
 import { FamiliaModule } from './modules/familia/familia.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { StudyOrdersModule } from './modules/study-orders/study-orders.module';
+import { AplicacionVacuna } from './modules/vacunacion/entities/aplicacion-vacuna.entity';
+import { CatalogoVacuna } from './modules/vacunacion/entities/catalogo-vacuna.entity';
+import { VacunacionModule } from './modules/vacunacion/vacunacion.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [databaseConfig, shieldaiConfig, tramitexpressConfig] }),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -50,13 +55,13 @@ import { StudyOrdersModule } from './modules/study-orders/study-orders.module';
         username: config.get('database.username'),
         password: config.get('database.password'),
         database: config.get('database.database'),
-        entities: [Usuario, ObraSocial, Appointment, MedicalRecord, Treatment, TreatmentFollowUp, Document, TriajeCritico, RegistroSaludMental, TranscripcionConsulta, Notification, StudyOrder, BloqueDisponibilidad, ConsentimientoMenor, MenorACargo],
+        entities: [Usuario, ObraSocial, Appointment, MedicalRecord, Treatment, TreatmentFollowUp, Document, TriajeCritico, RegistroSaludMental, TranscripcionConsulta, Notification, StudyOrder, BloqueDisponibilidad, ConsentimientoMenor, MenorACargo, CatalogoVacuna, AplicacionVacuna],
         synchronize: config.get<boolean>('database.synchronize'),
         logging: config.get<boolean>('database.logging'),
         autoLoadEntities: true,
       }),
     }),
-    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule, AmbientAiModule, CierreExpressModule, NotificationsModule, StudyOrdersModule, DemoSeedModule, DisponibilidadModule, FamiliaModule,
+    AuthModule, UsuariosModule, ObrasSocialesModule, AppointmentsModule, MedicalRecordsModule, TeleconsultModule, TreatmentsModule, DocumentsModule, AdminModule, TriajeCriticoModule, BovedaSaludMentalModule, AmbientAiModule, CierreExpressModule, NotificationsModule, StudyOrdersModule, DemoSeedModule, DisponibilidadModule, FamiliaModule, VacunacionModule,
   ],
 })
 export class AppModule {}

@@ -248,4 +248,41 @@ export interface MenorACargo {
   fechaActualizacion: string;
 }
 
+/** Resultado de buscar un menor por DNI desde el portal profesional */
+export interface MenorEncontrado extends MenorACargo {
+  tutor?: PersonaResumen;
+}
+
+export interface CatalogoVacuna {
+  id: string;
+  codigo: string;
+  nombre: string;
+  dosis: string;
+  edadObjetivoDias: number;
+  ventanaAlertaDias: number;
+  descripcion?: string | null;
+  orden: number;
+}
+
+export type EstadoAplicacionVacuna = 'pendiente' | 'aplicada';
+export type UrgenciaVacuna = 'aplicada' | 'atrasada' | 'proxima' | 'pendiente';
+
+export interface AplicacionVacuna {
+  id: string;
+  menorId: string;
+  catalogoVacunaId: string;
+  catalogoVacuna?: CatalogoVacuna;
+  fechaProgramada: string;
+  estado: EstadoAplicacionVacuna;
+  fechaAplicacion?: string | null;
+  loteVacuna?: string | null;
+  lugarAplicacion?: string | null;
+  medicoAplicadorId?: string | null;
+  medicoAplicador?: PersonaResumen | null;
+  notas?: string | null;
+  appointmentId?: string | null;
+  urgencia: UrgenciaVacuna;
+  fechaCreacion: string;
+}
+
 
