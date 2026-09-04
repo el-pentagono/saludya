@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import type { MouseEvent as ReactMouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import type { CSSProperties, MouseEvent as ReactMouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   contarNotificacionesNoLeidas,
@@ -9,10 +9,13 @@ import {
 } from '../api/notifications';
 import type { Notification } from '../types';
 
+const MARGEN_BORDE = 8; // separación mínima respecto de cualquier borde de la ventana
+
 export function NotificationBell() {
   const [notificaciones, setNotificaciones] = useState<Notification[]>([]);
   const [conteoNoLeidas, setConteoNoLeidas] = useState<number>(0);
   const [abierto, setAbierto] = useState<boolean>(false);
+  const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -47,6 +50,40 @@ export function NotificationBell() {
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [abierto]);
+
+  // Calcula la posición del desplegable en base al espacio real disponible en la ventana,
+  // para que nunca quede recortado ni se salga por los bordes de la pantalla.
+  useLayoutEffect(() => {
+    if (!abierto) return;
+
+    const posicionar = () => {
+      const trigger = dropdownRef.current?.getBoundingClientRect();
+      if (!trigger) return;
+
+      const ancho = Math.min(340, window.innerWidth - MARGEN_BORDE * 2);
+      let izquierda = trigger.right - ancho;
+      izquierda = Math.min(izquierda, window.innerWidth - ancho - MARGEN_BORDE);
+      izquierda = Math.max(izquierda, MARGEN_BORDE);
+
+      const alto = Math.min(420, window.innerHeight - trigger.bottom - MARGEN_BORDE * 2);
+
+      setDropdownStyle({
+        position: 'fixed',
+        top: trigger.bottom + 8,
+        left: izquierda,
+        width: ancho,
+        maxHeight: Math.max(alto, 200),
+      });
+    };
+
+    posicionar();
+    window.addEventListener('resize', posicionar);
+    window.addEventListener('scroll', posicionar, true);
+    return () => {
+      window.removeEventListener('resize', posicionar);
+      window.removeEventListener('scroll', posicionar, true);
     };
   }, [abierto]);
 
@@ -114,7 +151,7 @@ export function NotificationBell() {
       </button>
 
       {abierto && (
-        <div className="notif-dropdown">
+        <div className="notif-dropdown" style={dropdownStyle}>
           <div className="notif-header">
             <h4>Notificaciones</h4>
             {conteoNoLeidas > 0 && (
