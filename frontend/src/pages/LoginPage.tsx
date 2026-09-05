@@ -1,21 +1,53 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import type { AxiosError } from 'axios';
+import { App as CapacitorApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import { Link, useNavigate } from 'react-router-dom';
 import { extraerMensajeError } from '../api/errors';
 import { SaludYaPortalLogo } from '../components/SaludYaPortalLogo';
-import { useAuth } from '../context/AuthContext';
+import { DEMO_EMAIL, useAuth } from '../context/AuthContext';
+
+/**
+ * La app nativa "SaludYa Profesionales" (com.elpentagonodigital.saludya.profesionales)
+ * empaqueta el mismo bundle web que "SaludYa" (pacientes) -- ambas son el mismo
+ * Capacitor WebView, solo cambia el ícono/nombre nativo. Sin este chequeo, un
+ * profesional que instala "SaludYa Profesionales" cae igual en este login de
+ * pacientes. Se detecta en tiempo de ejecución (no en build) porque ambos
+ * flavors comparten exactamente el mismo `dist/` -- no hay forma de saber en
+ * el bundle web, al compilarlo, para qué flavor terminará empaquetado.
+ */
+const APPLICATION_ID_PROFESIONALES = 'com.elpentagonodigital.saludya.profesionales';
 
 export function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginDemoOffline } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    CapacitorApp.getInfo()
+      .then((info) => {
+        if (info.id === APPLICATION_ID_PROFESIONALES) {
+          navigate('/profesionales/login', { replace: true });
+        }
+      })
+      .catch(() => {
+        // Si el plugin falla, nos quedamos en el login de pacientes por defecto.
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // Detalle técnico del último error, solo para diagnóstico en pantalla
+  // (dispositivo real sin acceso a ADB/consola remota). Ver nota en catch.
+  const [detalleTecnico, setDetalleTecnico] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    setDetalleTecnico(null);
     setEnviando(true);
     try {
       const u = await login(email, password);
@@ -26,7 +58,32 @@ export function LoginPage() {
         navigate('/');
       }
     } catch (err) {
+      // Si es la cuenta demo y el backend no responde (sin red, servidor
+      // caído, etc.), no bloqueamos: entramos igual con datos locales para
+      // poder mostrar/testear la interfaz. Las cuentas reales no tienen
+      // este atajo -- siguen requiriendo el login real.
+      const axiosErr = err as AxiosError;
+      const sinRespuestaDelServidor = !axiosErr?.response;
+      if (email.trim().toLowerCase() === DEMO_EMAIL && sinRespuestaDelServidor) {
+        const u = loginDemoOffline(email);
+        if (u) {
+          navigate('/');
+          return;
+        }
+      }
       setError(extraerMensajeError(err, 'No se pudo iniciar sesión'));
+      // Diagnóstico temporal: en dispositivos reales no hay forma de leer la
+      // consola/red sin ADB, así que mostramos acá mismo el detalle técnico
+      // del fallo (código, mensaje, si hubo respuesta del servidor) para
+      // poder identificar la causa real. Sacar una vez resuelto el bug.
+      const partes = [
+        `code=${axiosErr?.code ?? 'n/a'}`,
+        `message=${axiosErr?.message ?? String(err)}`,
+        `hasResponse=${Boolean(axiosErr?.response)}`,
+        axiosErr?.response ? `status=${axiosErr.response.status}` : null,
+        `baseURL=${axiosErr?.config?.baseURL ?? 'n/a'}`,
+      ].filter(Boolean);
+      setDetalleTecnico(partes.join(' | '));
     } finally {
       setEnviando(false);
     }
@@ -65,6 +122,22 @@ export function LoginPage() {
         </p>
 
         {error && <p className="error">{error}</p>}
+        {detalleTecnico && (
+          <p
+            style={{
+              fontSize: '0.7rem',
+              color: '#991b1b',
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '6px',
+              padding: '0.5rem',
+              wordBreak: 'break-all',
+              fontFamily: 'monospace',
+            }}
+          >
+            DIAG: {detalleTecnico}
+          </p>
+        )}
 
         <label>
           Correo electrónico

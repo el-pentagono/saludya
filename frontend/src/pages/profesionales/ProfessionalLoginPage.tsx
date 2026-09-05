@@ -1,12 +1,23 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import type { AxiosError } from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { extraerMensajeError } from '../../api/errors';
 import { SaludYaPortalLogo } from '../../components/SaludYaPortalLogo';
 import { useAuth } from '../../context/AuthContext';
 
+// Emails demo de Profesionales (ver DEMO_USUARIOS en AuthContext y los
+// botones de acceso rápido más abajo) -- son los únicos habilitados para el
+// fallback offline si el backend no responde.
+const DEMO_EMAILS_PROFESIONALES = [
+  'demo.medico@saludya.com.ar',
+  'demo.enfermero@saludya.com.ar',
+  'demo.farmaceutico@saludya.com.ar',
+  'demo.director@saludya.com.ar',
+];
+
 export function ProfessionalLoginPage() {
-  const { login, logout } = useAuth();
+  const { login, loginDemoOffline, logout } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,6 +42,20 @@ export function ProfessionalLoginPage() {
       }
       navigate('/profesionales');
     } catch (err) {
+      // Igual que en el Portal de Pacientes: si es una cuenta demo conocida
+      // y el backend real no responde (sin red, servidor caído, etc.), no
+      // bloqueamos -- entramos igual con datos locales para poder mostrar/
+      // testear la interfaz durante una demo comercial. Las cuentas reales
+      // siempre requieren el login real contra el backend.
+      const sinRespuestaDelServidor = !(err as AxiosError)?.response;
+      const emailNormalizado = email.trim().toLowerCase();
+      if (DEMO_EMAILS_PROFESIONALES.includes(emailNormalizado) && sinRespuestaDelServidor) {
+        const u = loginDemoOffline(emailNormalizado);
+        if (u) {
+          navigate('/profesionales');
+          return;
+        }
+      }
       setError(extraerMensajeError(err, 'No se pudo iniciar sesión en el portal profesional'));
     } finally {
       setEnviando(false);
